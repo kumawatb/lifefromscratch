@@ -7,6 +7,4 @@ pub mod core {
 
     mod canvas;
     pub use canvas::Canvas;
-
-
 }
