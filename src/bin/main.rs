@@ -1,8 +1,5 @@
 use clap::Parser;
 use lifefromscratch::core::{Canvas, World};
-use minifb_geometry::GeometryDrawer;
-use minifb::{Key, ScaleMode, Window, WindowOptions};
-use minifb_fonts::*;
 
 /// The `Cli` struct stores the command line arguments
 #[derive(Parser)]
@@ -19,7 +16,7 @@ struct Cli {
     size_y: f32, 
 
     /// Atom diameter
-    #[arg(long, default_value_t = 1.0)]
+    #[arg(long, default_value_t = 2.0)]
     diameter: f32,
 
     /// Number of atom species (<=256)
@@ -35,12 +32,8 @@ struct Cli {
     init_atoms: u32,
     
     /// Number of time steps to run the simulation
-    #[arg(long, default_value_t = 100000000)]
+    #[arg(long, default_value_t = 100000)]
     t_max: usize,
-
-    /// Random seed (-1 for random)
-    #[arg(long)]
-    seed: Option<u32>,
 
     /// Visualize the space?
     #[arg(long, default_value_t=false)]
@@ -48,20 +41,27 @@ struct Cli {
 
     /// Skip draw_skip steps between drawing
     #[arg(long, default_value_t=1)]
-    draw_every: usize
+    draw_every: usize,
+
+    /// Seed for random number generator
+    #[arg(long, default_value_t=0)]
+    seed: u64
 }
 
 fn main(){
     let args = Cli::parse();
 
-    let mut world = World::new(args.size_x, args.size_y, args.diameter, 1.0);
+    let mut world = World::new(args.size_x, args.size_y, 1.0, args.seed);
     let mut canvas = Canvas::new(800, 800);
 
-    world.add_atom_at(50.0, 50.0, 0, 0);
+    // world.add_atom_at(50.0, 50.0, 0, 0, args.diameter);
+    // world.add_atom_at(10.0, 10.0, 0, 0, args.diameter);
+    // world.add_atom_at(90.0, 90.0, 0, 0, args.diameter);
+    world.init_random(args.init_atoms, args.diameter);
 
     for t in 0..args.t_max{
         world.step();
-        if args.draw && args.t_max%args.draw_every==0 {
+        if args.draw && t%args.draw_every==0 {
             canvas.draw(&world, &t);
         }
     }

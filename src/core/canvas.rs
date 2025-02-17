@@ -46,15 +46,37 @@ impl Canvas{
         }
     }
 
-    /// Draw the world to the canvas
+    /// Draw the world at a given time to the canvas
     pub fn draw(&mut self, world: &World, time: &usize){
         if self.window.is_open() && !self.window.is_key_down(Key::Escape){
+            
+            // Clear the buffer
             self.buffer = vec![0u32; self.width*self.height];
-            let _ = self.geometry_set.draw_box(&mut self.buffer, 120, 130, 220, 230, 0xffff00);
-            self.font_renderer.draw_text(&mut self.buffer, 10, 50, format!("Time: {}", time).as_str());
-        
+            
+            // Write time to buffer
+            self.font_renderer.draw_text(&mut self.buffer, 10, 10, format!("Time: {}", time).as_str());
+
+            // Draw a box
+            // let _ = self.geometry_set.draw_box(&mut self.buffer, 120, 130, 220, 230, 0xffff00);
+
+            self.world_to_buffer(world);
+            
+            // Write canvas to the buffer
             self.window.update_with_buffer(&self.buffer, self.width, self.height).unwrap();
         }
 
     }
+
+    // *********** PRIVATE ***********
+    /// Update buffer with particles in the world
+    fn world_to_buffer(&mut self, world: &World ){
+        //let _= self.geometry_set.draw_box(&mut self.buffer, 120, 130, 220, 230, 0xffff00);
+
+        for atom in world.atom_iter(){
+            let _ = self.geometry_set.draw_circle(&mut self.buffer, ((atom.x()/world.size_x()) * self.width as f32) as usize, ((atom.y()/world.size_y()) * self.height as f32) as usize, atom.r() as usize, 0xffff00);
+        }
+    }
+
+    
+
 }

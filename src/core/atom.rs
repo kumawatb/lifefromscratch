@@ -10,14 +10,32 @@ pub struct Atom{
     /// Tuple of 2D position of the atom in the world, 32-bit precision
     pos: (f32, f32),
 
+    /// Diameter of the atom
+    dia: f32
+
 }
 
 impl Atom{
     // *********** PUBLIC ***********
 
     /// Create a new atom with a given species, state, and positions
-    pub fn new(species: u8, state: u8, pos_x: f32, pos_y: f32) -> Atom {
-        Atom{ species: species, state: state, pos: (pos_x, pos_y)}
+    pub fn new(species: u8, state: u8, pos_x: f32, pos_y: f32, dia: f32) -> Atom {
+        Atom{ species: species, state: state, pos: (pos_x, pos_y), dia: dia}
+    }
+
+    /// Get position of atom
+    pub fn x(&self) -> f32 {
+        return self.pos.0
+    }
+
+    /// Get position of atom
+    pub fn y(&self) -> f32 {
+        return self.pos.1
+    }
+
+    /// Get radii of atom
+    pub fn r(&self) -> f32 {
+        return self.dia/2.0
     }
 
 
