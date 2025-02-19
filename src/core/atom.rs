@@ -38,6 +38,33 @@ impl Atom{
         return self.dia/2.0
     }
 
+    /// Get species of atom
+    pub fn species(&self) -> u8 {
+        return self.species;
+    }
+
+    /// Set position of atom
+    pub fn x_inc(&mut self, x_new: f32, size_x: f32){
+        self.pos.0 += x_new;
+        if self.pos.0 < 0.0{
+            self.pos.0 += size_x;
+        }
+        else if self.pos.0 > size_x {
+            self.pos.0 -= size_x;
+        }
+    }
+
+    /// Set position of atom
+    pub fn y_inc(&mut self, y_new: f32, size_y: f32){
+        self.pos.1 += y_new;
+        if self.pos.1 < 0.0{
+            self.pos.1 += size_y;
+        }
+        else if self.pos.1 > size_y {
+            self.pos.1 -= size_y;
+        }
+    }
+
 
     // *********** PRIVATE ***********
 

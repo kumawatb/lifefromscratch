@@ -16,7 +16,7 @@ struct Cli {
     size_y: f32, 
 
     /// Atom diameter
-    #[arg(long, default_value_t = 2.0)]
+    #[arg(long, default_value_t = 5.0)]
     diameter: f32,
 
     /// Number of atom species (<=256)
@@ -27,13 +27,17 @@ struct Cli {
     #[arg(long, default_value_t = 256)]
     num_states: u16,
 
+    /// Base temperature
+    #[arg(long, default_value_t = 0.05)]
+    temperature: f32,
+
     /// Initial number of atoms
     #[arg(long, default_value_t = 100)]
     init_atoms: u32,
     
     /// Number of time steps to run the simulation
-    #[arg(long, default_value_t = 100000)]
-    t_max: usize,
+    #[arg(long, default_value_t = 1000000)]
+    t_max: u64,
 
     /// Visualize the space?
     #[arg(long, default_value_t=false)]
@@ -41,7 +45,7 @@ struct Cli {
 
     /// Skip draw_skip steps between drawing
     #[arg(long, default_value_t=1)]
-    draw_every: usize,
+    draw_every: u64,
 
     /// Seed for random number generator
     #[arg(long, default_value_t=0)]
@@ -51,12 +55,9 @@ struct Cli {
 fn main(){
     let args = Cli::parse();
 
-    let mut world = World::new(args.size_x, args.size_y, 1.0, args.seed);
+    let mut world = World::new(args.size_x, args.size_y, args.temperature, args.seed);
     let mut canvas = Canvas::new(800, 800);
 
-    // world.add_atom_at(50.0, 50.0, 0, 0, args.diameter);
-    // world.add_atom_at(10.0, 10.0, 0, 0, args.diameter);
-    // world.add_atom_at(90.0, 90.0, 0, 0, args.diameter);
     world.init_random(args.init_atoms, args.diameter);
 
     for t in 0..args.t_max{

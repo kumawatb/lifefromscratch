@@ -1,3 +1,4 @@
+use colorgrad::{Color, Gradient};
 use minifb::{Key, ScaleMode, Window, WindowOptions};
 use minifb_fonts::{font6x8, FbFontRenderer};
 use minifb_geometry::GeometryDrawer;
@@ -14,7 +15,8 @@ pub struct Canvas{
     buffer: Vec<u32>,
     geometry_set: GeometryDrawer,
     window: Window,
-    font_renderer: FbFontRenderer
+    font_renderer: FbFontRenderer,
+    cmap: Vec<Color>
 }
 
 impl Canvas{
@@ -29,7 +31,7 @@ impl Canvas{
             height,
             WindowOptions {
                 resize: true,
-                scale_mode: ScaleMode::UpperLeft,
+                scale_mode: ScaleMode::AspectRatioStretch,
                 ..WindowOptions::default()
             }
         )
@@ -42,12 +44,13 @@ impl Canvas{
             buffer: vec![0u32; width*height], 
             geometry_set: GeometryDrawer::new(width),
             window: window,
-            font_renderer: font6x8::new_renderer(width, height, 0xffffff)
+            font_renderer: font6x8::new_renderer(width, height, 0xffffff),
+            cmap: colorgrad::preset::rainbow().colors(256)
         }
     }
 
     /// Draw the world at a given time to the canvas
-    pub fn draw(&mut self, world: &World, time: &usize){
+    pub fn draw(&mut self, world: &World, time: &u64){
         if self.window.is_open() && !self.window.is_key_down(Key::Escape){
             
             // Clear the buffer
@@ -73,8 +76,20 @@ impl Canvas{
         //let _= self.geometry_set.draw_box(&mut self.buffer, 120, 130, 220, 230, 0xffff00);
 
         for atom in world.atom_iter(){
-            let _ = self.geometry_set.draw_circle(&mut self.buffer, ((atom.x()/world.size_x()) * self.width as f32) as usize, ((atom.y()/world.size_y()) * self.height as f32) as usize, atom.r() as usize, 0xffff00);
+            let col = self.get_col_int(atom.species());
+            let _ = self.geometry_set.draw_circle(&mut self.buffer, 
+                ((atom.x()/world.size_x()) * self.width as f32) as usize, 
+                ((atom.y()/world.size_y()) * self.height as f32) as usize,
+                ((atom.r()/world.size_x()) * self.width as f32) as usize,
+                col);
         }
+    }
+
+    /// Get the color based on an atom species as an integer
+    fn get_col_int(&self, spec: u8) -> usize {
+        let rgb = self.cmap[spec as usize].to_rgba8();
+        let colint: usize = rgb[0] as usize * 256 * 256 + rgb[1] as usize * 256 + rgb[2] as usize;
+        return colint as usize
     }
 
     

@@ -8,9 +8,10 @@ use crate::core::Atom;
 pub struct World{
     size: (f32,f32) ,
     temperature: f32,
-    atoms: Vec<Atom>,
-    rng: Xoshiro256Plus
 
+    /// Vector containing the atoms, each index is an atom in the world
+    atoms: Vec<Atom>,
+    rng: Xoshiro256Plus,
 }
 
 impl World{
@@ -18,7 +19,7 @@ impl World{
 
     /// Create a new world with a given size and temperature
     pub fn new(size_x: f32, size_y: f32, temperature: f32, seed: u64) -> World {
-        let mut world_rng = if seed==0 { Xoshiro256Plus::from_os_rng() } else { Xoshiro256Plus::seed_from_u64(seed) };
+        let world_rng = if seed==0 { Xoshiro256Plus::from_os_rng() } else { Xoshiro256Plus::seed_from_u64(seed) };
         
         World{ size:(size_x,size_y), temperature:temperature, atoms: Vec::new(), rng: world_rng}
     }
@@ -34,12 +35,22 @@ impl World{
         for _ in 0..n_atoms{
             let x: f32 = self.rng.random();
             let y: f32= self.rng.random();
-            self.add_atom_at(x*self.size.0, y*self.size.1, 0, 0, dia);
+            let spec: u8 = self.rng.random();
+            self.add_atom_at(x*self.size.0, y*self.size.1, spec, 0, dia);
         }
     }
 
     /// Step the world by one unit of time
     pub fn step(&mut self){
+
+        // Diffuse the particle proportional to world temperature
+        for atom in self.atoms.iter_mut(){
+            atom.y_inc(self.temperature * (self.rng.random::<f32>() * 2.0 - 1.0) , self.size.1);
+            atom.x_inc(self.temperature * (self.rng.random::<f32>() * 2.0 - 1.0), self.size.0);
+        }
+
+        // Resolve any collisions created during individual atom moves.
+        self.resolve_all_collisions();
     }
 
 
@@ -59,4 +70,17 @@ impl World{
     }
 
     // *********** PRIVATE ***********
+
+    /// Resolves all collisions using a simple spatial hasing algorithm
+    fn resolve_all_collisions(&mut self){
+        // Find all pairs of atoms that intersect (use a spatial hash)
+        todo!();
+        // self.resolve_collision(atom1, atom2);
+    }
+
+    /// Resolve collisions between given atoms
+    fn _resolve_collision(&mut self, _atom1: &Atom, _atom2: &Atom){
+        // Resolve the collision of the given atoms
+        todo!();
+    }
 }
