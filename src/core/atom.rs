@@ -11,7 +11,10 @@ pub struct Atom{
     pos: (f32, f32),
 
     /// Diameter of the atom
-    dia: f32
+    dia: f32,
+
+    /// A unique id for the atom
+    id: u32
 
 }
 
@@ -19,8 +22,8 @@ impl Atom{
     // *********** PUBLIC ***********
 
     /// Create a new atom with a given species, state, and positions
-    pub fn new(species: u8, state: u8, pos_x: f32, pos_y: f32, dia: f32) -> Atom {
-        Atom{ species: species, state: state, pos: (pos_x, pos_y), dia: dia}
+    pub fn new(species: u8, state: u8, pos_x: f32, pos_y: f32, dia: f32, id: u32) -> Atom {
+        Atom{ species: species, state: state, pos: (pos_x, pos_y), dia: dia, id: id}
     }
 
     /// Get position of atom
@@ -43,28 +46,6 @@ impl Atom{
         return self.species;
     }
 
-    /// Set position of atom
-    pub fn x_inc(&mut self, x_new: f32, size_x: f32){
-        self.pos.0 += x_new;
-        if self.pos.0 < 0.0{
-            self.pos.0 += size_x;
-        }
-        else if self.pos.0 > size_x {
-            self.pos.0 -= size_x;
-        }
-    }
-
-    /// Set position of atom
-    pub fn y_inc(&mut self, y_new: f32, size_y: f32){
-        self.pos.1 += y_new;
-        if self.pos.1 < 0.0{
-            self.pos.1 += size_y;
-        }
-        else if self.pos.1 > size_y {
-            self.pos.1 -= size_y;
-        }
-    }
-
 
     // *********** PRIVATE ***********
 
@@ -82,4 +63,34 @@ impl Atom{
 
 }
 
+
+pub trait Spatial2D {
+    fn x_inc(&mut self, x_new: f32, size_x: f32);
+
+    fn y_inc(&mut self, y_new: f32, size_y: f32);
+}
+
+impl Spatial2D for Atom{
+/// Set position of atom
+    fn x_inc(&mut self, x_new: f32, size_x: f32){
+        self.pos.0 += x_new;
+        if self.pos.0 < 0.0{
+            self.pos.0 += size_x;
+        }
+        else if self.pos.0 > size_x {
+            self.pos.0 -= size_x;
+        }
+    }
+
+    /// Set position of atom
+    fn y_inc(&mut self, y_new: f32, size_y: f32){
+        self.pos.1 += y_new;
+        if self.pos.1 < 0.0{
+            self.pos.1 += size_y;
+        }
+        else if self.pos.1 > size_y {
+            self.pos.1 -= size_y;
+        }
+    }
+}
 

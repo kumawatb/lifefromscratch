@@ -55,7 +55,7 @@ struct Cli {
 fn main(){
     let args = Cli::parse();
 
-    let mut world = World::new(args.size_x, args.size_y, args.temperature, args.seed);
+    let mut world = World::new(args.size_x, args.size_y, args.temperature, args.seed, args.diameter);
     let mut canvas = Canvas::new(800, 800);
 
     world.init_random(args.init_atoms, args.diameter);
@@ -67,11 +67,3 @@ fn main(){
         }
     }
 }
-
-
-
-
-
-
-
-
