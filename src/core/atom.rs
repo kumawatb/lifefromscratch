@@ -26,20 +26,6 @@ impl Atom{
         Atom{ species: species, state: state, pos: (pos_x, pos_y), dia: dia, id: id}
     }
 
-    /// Get position of atom
-    pub fn x(&self) -> f32 {
-        return self.pos.0
-    }
-
-    /// Get position of atom
-    pub fn y(&self) -> f32 {
-        return self.pos.1
-    }
-
-    /// Get radii of atom
-    pub fn r(&self) -> f32 {
-        return self.dia/2.0
-    }
 
     /// Get species of atom
     pub fn species(&self) -> u8 {
@@ -68,6 +54,16 @@ pub trait Spatial2D {
     fn x_inc(&mut self, x_new: f32, size_x: f32);
 
     fn y_inc(&mut self, y_new: f32, size_y: f32);
+
+    fn spatial_props(&self) -> ((f32, f32), f32);
+
+    fn x(&self) -> f32;
+
+    fn y(&self) -> f32;
+
+    fn r(&self) -> f32;
+
+    fn id(&self) -> u32;
 }
 
 impl Spatial2D for Atom{
@@ -91,6 +87,31 @@ impl Spatial2D for Atom{
         else if self.pos.1 > size_y {
             self.pos.1 -= size_y;
         }
+    }
+
+    /// Get positions and diameter of atom
+    fn spatial_props(&self) -> ((f32, f32), f32){
+        return (self.pos, self.dia)
+    }
+
+    /// Get position of atom
+    fn x(&self) -> f32 {
+        return self.pos.0
+    }
+
+    /// Get position of atom
+    fn y(&self) -> f32 {
+        return self.pos.1
+    }
+
+    /// Get radii of atom
+    fn r(&self) -> f32 {
+        return self.dia/2.0
+    }
+
+    /// Get object id
+    fn id(&self) -> u32 {
+        return self.id
     }
 }
 

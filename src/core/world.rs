@@ -36,7 +36,7 @@ impl World{
         
         let new_atom = Atom::new(species, state, x, y, dia, atomid);
 
-        self.atom_grid.push(new_atom, x, y, atomid);
+        self.atom_grid.push(new_atom);
         self.num_atoms +=1 ;
     }
 
@@ -56,15 +56,17 @@ impl World{
 
     /// Step the world by one unit of time
     pub fn step(&mut self){
+
+        // First, move all atoms diffusively
         for atomid in 0..self.num_atoms{
             let x_inc = self.temperature * (self.rng.random::<f32>() * 2.0 - 1.0) ;
             let y_inc = self.temperature * (self.rng.random::<f32>() * 2.0 - 1.0);
-            self.atom_grid.move_obj(atomid, x_inc, y_inc)
+            self.atom_grid.move_obj(atomid, x_inc, y_inc);
         }
-        
-
-        // Resolve any collisions created during individual atom moves.
-        // self.resolve_all_collisions();
+        // Resolve all collisions that are created during the diffusive moves
+        for _ in 0..8{
+            self.atom_grid.detect_and_resolve_collisions();
+        }
     }
 
 
@@ -84,17 +86,4 @@ impl World{
     }
 
     // *********** PRIVATE ***********
-
-    /// Resolves all collisions using a simple spatial hasing algorithm
-    fn resolve_all_collisions(&mut self){
-        // Find all pairs of atoms that intersect (use a spatial hash)
-        unimplemented!()
-        // self.resolve_collision(atom1, atom2);
-    }
-
-    /// Resolve collisions between given atoms
-    fn resolve_collision(&mut self, _atom1: &Atom, _atom2: &Atom){
-        // Resolve the collision of the given atoms
-        unimplemented!()
-    }
 }

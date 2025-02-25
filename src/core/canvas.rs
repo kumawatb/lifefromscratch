@@ -2,7 +2,7 @@ use colorgrad::{Color, Gradient};
 use minifb::{Key, ScaleMode, Window, WindowOptions};
 use minifb_fonts::{font6x8, FbFontRenderer};
 use minifb_geometry::GeometryDrawer;
-
+use crate::core::atom::Spatial2D;
 use crate::core::World;
 
 
@@ -59,9 +59,6 @@ impl Canvas{
             // Write time to buffer
             self.font_renderer.draw_text(&mut self.buffer, 10, 10, format!("Time: {}", time).as_str());
 
-            // Draw a box
-            // let _ = self.geometry_set.draw_box(&mut self.buffer, 120, 130, 220, 230, 0xffff00);
-
             self.world_to_buffer(world);
             
             // Write canvas to the buffer
@@ -78,8 +75,8 @@ impl Canvas{
         for atom in world.atom_iter(){
             let col = self.get_col_int(atom.species());
             let _ = self.geometry_set.draw_circle(&mut self.buffer, 
-                ((atom.x()/world.size_x()) * self.width as f32) as usize, 
-                ((atom.y()/world.size_y()) * self.height as f32) as usize,
+                (( (atom.x()-atom.r())/world.size_x()) * self.width as f32) as usize, 
+                (( (atom.y()-atom.r())/world.size_y()) * self.height as f32) as usize,
                 ((atom.r()/world.size_x()) * self.width as f32) as usize,
                 col);
         }
