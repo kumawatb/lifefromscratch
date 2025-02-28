@@ -1,12 +1,11 @@
 use clap::Parser;
-use lifefromscratch::core::{Canvas, World};
+use bevy::prelude::*;
 
 /// The `Cli` struct stores the command line arguments
-#[derive(Parser)]
+#[derive(Parser, Debug, Resource)]
 #[command(name = "LifeFromScratch Simulator")]
 #[command(version, about, long_about = None)]
-#[derive(Debug)]
-struct Cli {
+struct Args {
     /// Size of the world along x
     #[arg(long, default_value_t = 100.0)]
     size_x: f32, 
@@ -52,18 +51,15 @@ struct Cli {
     seed: u64
 }
 
-fn main(){
-    let args = Cli::parse();
+pub struct ArgsPlugin;
 
-    let mut world = World::new(args.size_x, args.size_y, args.temperature, args.seed, args.diameter);
-    let mut canvas = Canvas::new(800, 800);
-
-    world.init_random(args.init_atoms, args.diameter);
-
-    for t in 0..args.t_max{
-        world.step();
-        if args.draw && t%args.draw_every==0 {
-            canvas.draw(&world, &t);
-        }
+impl Plugin for ArgsPlugin {
+    fn build(&self, app: &mut App){
+        app.insert_resource(Args::parse());
     }
 }
+
+
+// fn print_cli_args(args: Res<Cargs>){
+//     println!("{:?}", args);
+// }
