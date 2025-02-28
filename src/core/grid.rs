@@ -89,9 +89,13 @@ impl<T: Spatial2D> Grid<T>{
 
         //println!("{:}, {:}", x, y);
 
-        let gidx = ( x / self.spacing.0 ) as usize;
-        let gidy = ( y / self.spacing.1 ) as usize;
-        let gid = gidx + gidy * self.span.0 ; 
+        let gidx = ( x / self.spacing.0 ) as usize; // x = 99.9 => gidx = 99
+        let gidy = ( y / self.spacing.1 ) as usize; // y = 99.9 => gidy = 99
+        let gid = gidx + gidy * self.span.0 ; // => gid = 100 * 99 + 99
+
+        if gid >= self.span.0 * self.span.1 {
+            println!(" x : {:}, y : {:}, gidx : {:}, gidy : {:}, gid : {:}", x, y, gidx, gidy, gid);
+        }
 
         self.mapvec[gid].insert(objid, obj);
         self.idlookup.insert(objid, gid);
@@ -155,14 +159,6 @@ impl<T: Spatial2D> Grid<T>{
                             let move_x = (d) * ((x2-x1)/dist);
                             let move_y = (d) * ((y2-y1)/dist);
                             
-                            // Add future collision modifier to objid
-                            if col_to_resolve.contains_key(objid){
-                                col_to_resolve.get_mut(objid).unwrap().0 -= move_x;
-                                col_to_resolve.get_mut(objid).unwrap().1 -= move_y;
-                            } else {
-                                col_to_resolve.insert(*objid, (-move_x, -move_y));
-                            }
-
                             // Add future collision modifier to objid
                             if col_to_resolve.contains_key(objid){
                                 col_to_resolve.get_mut(objid).unwrap().0 -= move_x;

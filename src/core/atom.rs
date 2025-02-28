@@ -34,13 +34,6 @@ impl Atom{
 
 
     // *********** PRIVATE ***********
-
-    /// Move atom to a new position `(new_x, new_y)` in the world
-    fn move_to(&mut self, new_x: f32, new_y: f32){
-        self.pos = (new_x, new_y);
-    }
-    
-
     /// Change state of the atom to `new_state`
     fn state_to(&mut self, new_state: u8){
         self.state = new_state;
@@ -73,7 +66,7 @@ impl Spatial2D for Atom{
         if self.pos.0 < 0.0{
             self.pos.0 += size_x;
         }
-        else if self.pos.0 > size_x {
+        if self.pos.0 >= size_x {
             self.pos.0 -= size_x;
         }
     }
@@ -84,7 +77,7 @@ impl Spatial2D for Atom{
         if self.pos.1 < 0.0{
             self.pos.1 += size_y;
         }
-        else if self.pos.1 > size_y {
+        if self.pos.1 >= size_y {
             self.pos.1 -= size_y;
         }
     }
