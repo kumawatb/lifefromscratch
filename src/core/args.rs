@@ -1,7 +1,18 @@
 use clap::Parser;
 use bevy::prelude::*;
 
-/// The `Cli` struct stores the command line arguments
+
+/// Bevy Plugin for initializing CLI argument reading
+pub struct ArgsPlugin;
+
+impl Plugin for ArgsPlugin {
+    fn build(&self, app: &mut App){
+        app.insert_resource(Args::parse());
+    }
+}
+
+
+/// The `Args` struct stores the command line arguments
 #[derive(Parser, Debug, Resource)]
 #[command(name = "LifeFromScratch Simulator")]
 #[command(version, about, long_about = None)]
@@ -50,16 +61,3 @@ struct Args {
     #[arg(long, default_value_t=0)]
     seed: u64
 }
-
-pub struct ArgsPlugin;
-
-impl Plugin for ArgsPlugin {
-    fn build(&self, app: &mut App){
-        app.insert_resource(Args::parse());
-    }
-}
-
-
-// fn print_cli_args(args: Res<Cargs>){
-//     println!("{:?}", args);
-// }

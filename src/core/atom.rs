@@ -1,110 +1,48 @@
+use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
+use crate::core::movement::Position;
 
-/// Struct to represent an atom in the simulation
+
+/// Bevy Plugin to initialize and work with atoms
+pub struct AtomsPlugin;
+
+impl Plugin for AtomsPlugin {
+    fn build(&self, app: &mut App){
+        app.add_systems(Startup, spawn_atoms);
+        app.add_systems(Update, diffuse_atoms);
+    }
+}
+
+/// Struct to represent an atom in the simulation (Field 0: Species, Field 1: State)
+#[derive(Component, Default)]
+#[require(Position)]
 pub struct Atom{
-    /// Species of the atom (originally type in Squirm3), max 255
-    species: u8,
-    
-    /// State of the atom, max 255
-    state: u8,
-
-    /// Tuple of 2D position of the atom in the world, 32-bit precision
-    pos: (f32, f32),
-
-    /// Diameter of the atom
-    dia: f32,
-
-    /// A unique id for the atom
-    id: u32
-
+    species: u8, 
+    state: u8
 }
 
-impl Atom{
-    // *********** PUBLIC ***********
+fn spawn_atoms(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>
+)
+{
+    let shape = Circle::new(5.0);
+    let color = Color::srgb(1., 0., 0.);
 
-    /// Create a new atom with a given species, state, and positions
-    pub fn new(species: u8, state: u8, pos_x: f32, pos_y: f32, dia: f32, id: u32) -> Atom {
-        Atom{ species: species, state: state, pos: (pos_x, pos_y), dia: dia, id: id}
-    }
+    let mesh = meshes.add(shape);
+    let material = materials.add(color);
 
-
-    /// Get species of atom
-    pub fn species(&self) -> u8 {
-        return self.species;
-    }
-
-
-    // *********** PRIVATE ***********
-    /// Change state of the atom to `new_state`
-    fn state_to(&mut self, new_state: u8){
-        self.state = new_state;
-    }
-
-
+    commands.spawn( (Atom{species: 0, state: 0}, Mesh2d(mesh),  MeshMaterial2d(material)) );
 }
 
 
-pub trait Spatial2D {
-    fn x_inc(&mut self, x_new: f32, size_x: f32);
-
-    fn y_inc(&mut self, y_new: f32, size_y: f32);
-
-    fn spatial_props(&self) -> ((f32, f32), f32);
-
-    fn x(&self) -> f32;
-
-    fn y(&self) -> f32;
-
-    fn r(&self) -> f32;
-
-    fn id(&self) -> u32;
-}
-
-impl Spatial2D for Atom{
-/// Set position of atom
-    fn x_inc(&mut self, x_new: f32, size_x: f32){
-        self.pos.0 += x_new;
-        if self.pos.0 < 0.0{
-            self.pos.0 += size_x;
-        }
-        if self.pos.0 >= size_x {
-            self.pos.0 -= size_x;
-        }
-    }
-
-    /// Set position of atom
-    fn y_inc(&mut self, y_new: f32, size_y: f32){
-        self.pos.1 += y_new;
-        if self.pos.1 < 0.0{
-            self.pos.1 += size_y;
-        }
-        if self.pos.1 >= size_y {
-            self.pos.1 -= size_y;
-        }
-    }
-
-    /// Get positions and diameter of atom
-    fn spatial_props(&self) -> ((f32, f32), f32){
-        return (self.pos, self.dia)
-    }
-
-    /// Get position of atom
-    fn x(&self) -> f32 {
-        return self.pos.0
-    }
-
-    /// Get position of atom
-    fn y(&self) -> f32 {
-        return self.pos.1
-    }
-
-    /// Get radii of atom
-    fn r(&self) -> f32 {
-        return self.dia/2.0
-    }
-
-    /// Get object id
-    fn id(&self) -> u32 {
-        return self.id
+fn diffuse_atoms(
+    mut atom: Query<&mut Position, With<Atom>>
+    ){
+    if let Ok(mut pos) = atom.get_single_mut() {
+        pos.0.x += 1.0;
+        pos.0.y += 1.0;
     }
 }
 
