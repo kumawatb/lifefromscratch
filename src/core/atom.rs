@@ -73,7 +73,7 @@ impl Spatial2D for Atom{
         if self.pos.0 < 0.0{
             self.pos.0 += size_x;
         }
-        else if self.pos.0 > size_x {
+        if self.pos.0 > size_x {
             self.pos.0 -= size_x;
         }
     }
@@ -84,7 +84,7 @@ impl Spatial2D for Atom{
         if self.pos.1 < 0.0{
             self.pos.1 += size_y;
         }
-        else if self.pos.1 > size_y {
+        if self.pos.1 > size_y {
             self.pos.1 -= size_y;
         }
     }
