@@ -1,9 +1,11 @@
+use std::f32::consts::PI;
+
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use colorgrad::Gradient;
 use rand::Rng;
 use crate::core::args::Args;
-use crate::{setup_rng, SimRng};
+use crate::{setup_sim, SimRng};
 
 
 /// Bevy Plugin to initialize and work with atoms
@@ -11,7 +13,7 @@ pub struct AtomsPlugin;
 
 impl Plugin for AtomsPlugin {
     fn build(&self, app: &mut App){
-        app.add_systems(Startup, spawn_atoms.after(setup_rng));
+        app.add_systems(Startup, spawn_atoms.after(setup_sim));
         app.add_systems(Update, diffuse_atoms);
     }
 }
@@ -30,12 +32,9 @@ fn spawn_atoms(
     window: Query<&Window>
 )
 {
-
     let shape = Circle::new(args.diameter/2.0);
     let window_width = window.single().width();
     let window_height = window.single().height();
-
-
 
     // Add atoms to random positions inside the world
     for _ in 0..args.init_atoms{
@@ -47,33 +46,38 @@ fn spawn_atoms(
 
         let mesh = meshes.add(shape);
         let material = materials.add(color);
-        commands.spawn( (
+
+        let atombundle = (
             Atom{}, 
             Transform::from_xyz(  window_width * (rng.0.random::<f32>() * 1. - 0.5),  window_height * (rng.0.random::<f32>() * 1. - 0.5), 0.0),
+            Velocity{
+                linvel: Vec2::new(0.0,0.0),
+                angvel: 0.0
+            },
             Mesh2d(mesh),  
             MeshMaterial2d(material), 
             RigidBody::Dynamic,
             Collider::ball(args.diameter/2.0),
-            Friction {
-                coefficient: 0.0,
-                combine_rule: CoefficientCombineRule::Min,
-            },
+            ColliderMassProperties::Density(10.0),
+            Friction::coefficient(0.0),
             GravityScale(0.0),
-            Ccd::enabled(),
-            Sleeping::disabled(),
-            ActiveEvents::COLLISION_EVENTS
-        ) );
+            Sleeping::disabled()
+        );
+        commands.spawn(atombundle);
+        
     }
 }
 
 
 fn diffuse_atoms(
-    mut atoms: Query<&mut Transform, With<Atom>>,
+    mut atoms: Query<(&mut Transform, &mut Velocity),With<Atom>>,
     args: Res<Args>,
     mut rng: ResMut<SimRng>
     ){
 
-    for mut pos in &mut atoms{
-        pos.translation += Vec2::new(args.temperature * (rng.0.random::<f32>() * 2.0 - 1.0),args.temperature * (rng.0.random::<f32>() * 2.0 - 1.0)).extend(0.);
+    for (mut pos, mut vel) in &mut atoms{
+        let ang = rng.0.random::<f32>() * 2.0 * PI;
+        vel.linvel.x = args.temperature * ang.cos() ;
+        vel.linvel.y = args.temperature * ang.sin() ;
     }
 }
