@@ -1,0 +1,97 @@
+/*-- scss:defaults --*/
+// Define colors
+$accent1: #C50003;
+$accent2: #D48082;
+
+// set link color to accent1
+$link-color: $accent1;
+
+// Define fonts
+@font-face{
+    font-family: 'Source Sans';
+    src: url("./fonts/SourceSansPro-Regular.ttf");
+}
+
+@font-face{
+    font-family: 'Source Sans';
+    src: url("./fonts/SourceSansPro-SemiBold.ttf");
+    font-weight: bold;
+}
+
+@font-face{
+    font-family: 'Merriweather';
+    src: url("fonts/Merriweather-Regular.ttf");
+}
+@font-face{
+    font-family: 'Merriweather';
+    src: url("fonts/Merriweather-Bold.ttf");
+    font-weight: bold;
+}
+
+// Set default font to Source Sans
+$font-family-sans-serif: Source Sans;
+
+// Set body color to white
+$body-bg: #ffffff;
+
+
+/*-- scss:rules --*/
+
+// Set font for navbar title
+span.navbar-title {
+    font-family: Merriweather;
+}
+
+// Set border for navbar
+.navbar{
+    border-width: 0px;
+}
+
+// Remove underline from links
+a:link{
+    text-decoration: none;
+}
+
+// Set link hover color
+a:hover{
+    color: $accent2;
+}
+
+h2{
+    font-weight: bold;
+    font-size: 18pt;
+}
+
+h3{
+    font-weight: bold;
+    font-size: 14pt;
+}
+
+font.smalltext{
+    font-size: 10pt;
+}
+
+.callout.callout-style-simple {
+    padding: 0em 0em;
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+    border-bottom: 0px;
+}
+
+.callout.callout-style-simple>div.callout-header {
+    border-bottom: none;
+    font-weight: 500;
+    opacity: 100%;
+    color:$accent1;
+}
+
+section#footnotes {
+    display: none !important;
+}
+  
+#quarto-appendix.default {
+    border-top: none !important;
+}
+
+

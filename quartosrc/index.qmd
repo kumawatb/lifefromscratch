@@ -1,0 +1,5 @@
+# Introduction {.unnumbered}
+
+This book is a development log for the "Life from Scratch" (LfS) project that started as a part of the CMPLXSYS 530 class at University of Michigan. The following chapters detail the initial proposal and final paper for the class, along with further updates on the development of this program after the course concluded.
+
+

@@ -1,0 +1,75 @@
+# Project Proposal {.unnumbered}
+
+## Model Proposal for Life from Scratch
+
+**Bhaskar Kumawat**
+
+* Course ID: CMPLXSYS 530
+* Course Title: Computer Modeling of Complex systems
+* Term: Winter, 2025
+
+## Overview
+### Goal
+*Provide a short, 1-3 sentence description of the goal of your model and/or the question(s) you hope to answer.*
+
+### Rationale
+*Give a short justification of why the overall modeling approach you are taking is appropriate for addressing the question/goal above.*
+
+### Main Micro-level Proceses and Macro-level Dynamics of Interest
+*Short overview of the key processes and/or relationships you are interested in using your model to explore. From the micro-level processes (i.e. interactions between agents, agents and the environment, etc.), what macro-level, overall emergent dynamics are you interested in examining?*
+
+*If you wish, you may also include a discussion here of any design concepts from the ODD protocol that you are interested in addressing.*
+
+## Model
+*Give a brief overall description of the structure of your model, with a 1-2 sentence overview of the type of model your are using, the general types of agents you are considering, the environment, and how you plan to implement time.*
+
+***Model diagram***: Include an overall model diagram illustrating the general structure of your model, as well as a flowchart illustrating how the model processes will run at each time step.*
+
+### 1) Environment
+
+*Give an overall description of the environment in your model. Things to address if they apply:*
+
+* Boundary conditions (e.g. wrapping, infinite, etc.)
+* Dimensionality (e.g. 1D, 2D, etc.) or type of environment (e.g. is it a grid? Open space?)
+* Does your environment have properties? (e.g. resources at that location in the environment, different conditions, etc.)
+* Does your environment have actions/procedures/processes that occur? (E.g. growth of plants on blank grid spaces might be an example)
+
+*Be sure to give a complete enough description that we can understand how the environment is structured, how it may change, and how it may interact with your agents (described further below).*
+
+### 2) Agents
+*Give a more detailed description of the “agents” in the system, addressing their properties, actions, and rules. Specifically, be sure to address:*
+
+* Agent properties (e.g. age, location, ID, etc.)
+* Agent actions (e.g. move, consume, reproduce, die, etc.), and how these actions affect the agent, other agents, and the environment
+* _Agent rules: Give a brief overview of the rules which govern which actions will occur and how they depend on the agent properties (e.g. a rule might be that if there is not enough food, the agent will move to a new location in search of food). _
+* Interaction topology: give a description of who interacts with whom in the system. Are your agents perfectly mixed? Spatial proximity? Along a network? Cellular automata neighborhood? Are interactions only between agents, or with the environment as well?
+
+*Each of the above can be (for example) a bulleted list with descriptions, or a table with descriptions, prose format, etc.*
+
+### 3) Model Scheduling
+*Provide a high level, step-by-step description of your schedule during each “tick” of the model (or whatever the equivalent is if you are using a different implementation of time). What does an agent, cell, etc. do on a given turn? Provide a step-by-step description of what happens on a given turn for each part of your model. This can be a good place to include the flowchart diagram mentioned above.*
+
+1. Step 1
+2. Step 2
+3. Etc…
+
+### 4) Model Parameters and Initialization
+*Describe and list any global parameters you will be applying in your model.*
+
+*Describe how your model will be initialized*
+
+### 5) Assessment and Outcome Measures
+*What quantitative metrics and/or qualitative features will you use to assess your model outcomes?
+
+What analyses do you plan to run, and how will these analyses help you to address the question or goal that you started with?*
+
+### 6) Parameter Exploration
+*What parameters are you most interested in sweeping through or sampling? What value ranges do you expect to look at for your analysis? How will this help you to answer the question or goal that you started with?*
+
+## Questions and challenges
+
+*Include any questions you have, issues or problems you are encountering, or areas that you would like to get feedback on here! This will help your classmates and me provide useful comments/questions.*
+
+## Code or Pseudocode
+
+*If you have begun to code your model, include a first pass of the code you are using here. If you haven’t started yet, that’s okay! Psedocode is great too—as a first step, you can take the flowchart you made in the previous sections, and start writing pseudocode based on that.*

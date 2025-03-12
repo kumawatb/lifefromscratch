@@ -1,10 +1,8 @@
-use std::num::{NonZero, NonZeroUsize};
-
 use bevy::{prelude::*, window::WindowResolution};
 use bevy_rapier2d::{prelude::*, rapier::prelude::IntegrationParameters};
 use rand::SeedableRng;
 mod core;
-use crate::core::{args::ArgsPlugin, atom::AtomsPlugin, args::Args};
+use crate::core::{args::ArgsPlugin, atom::AtomsPlugin, args::Args, chemistry::ChemistryPlugin};
 use rand_xoshiro::Xoshiro256Plus;
 
 
@@ -16,9 +14,10 @@ fn main(){
     let _ = App::new()
         .add_plugins(ArgsPlugin)
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(PIXELS_PER_METER))
-        //.add_plugins(RapierDebugRenderPlugin::default())
+        .add_plugins(RapierDebugRenderPlugin::default())
         .add_systems(Startup, setup_sim)                        
         .add_plugins(AtomsPlugin)
+        .add_plugins(ChemistryPlugin)
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(
                 Window {
@@ -57,6 +56,7 @@ fn setup_sim(
     context.single_mut().integration_parameters = IntegrationParameters{  
         //length_unit: args.diameter/100.0,
         normalized_max_corrective_velocity: args.diameter*100.0,
+        joint_damping_ratio: 1.0e6,
         ..Default::default() 
     };
 }

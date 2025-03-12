@@ -20,7 +20,7 @@ impl Plugin for AtomsPlugin {
 
 /// Struct to represent an atom in the simulation (Field 0: Species, Field 1: State)
 #[derive(Component, Default)]
-pub struct Atom();
+pub struct Atom(pub u8, pub u8);
 
 
 fn spawn_atoms(
@@ -38,8 +38,8 @@ fn spawn_atoms(
 
     // Add atoms to random positions inside the world
     for _ in 0..args.init_atoms{
-        let species = rng.0.random::<u8>();
-        let state: u8 = rng.0.random::<u8>();
+        let species = 0; //rng.0.random::<u8>();
+        let state: u8 = 0; //rng.0.random::<u8>();
 
         let rgb = colorgrad::preset::rainbow().colors(256)[species as usize].to_linear_rgba();
         let color = Color::srgb(rgb[0] as f32, rgb[1] as f32, rgb[2] as f32);
@@ -48,7 +48,7 @@ fn spawn_atoms(
         let material = materials.add(color);
 
         let atombundle = (
-            Atom{}, 
+            Atom(species, state), 
             Transform::from_xyz(  window_width * (rng.0.random::<f32>() * 1. - 0.5),  window_height * (rng.0.random::<f32>() * 1. - 0.5), 0.0),
             Velocity{
                 linvel: Vec2::new(0.0,0.0),
@@ -58,10 +58,10 @@ fn spawn_atoms(
             MeshMaterial2d(material), 
             RigidBody::Dynamic,
             Collider::ball(args.diameter/2.0),
-            ColliderMassProperties::Density(10.0),
             Friction::coefficient(0.0),
             GravityScale(0.0),
-            Sleeping::disabled()
+            Sleeping::disabled(),
+            ActiveEvents::COLLISION_EVENTS
         );
         commands.spawn(atombundle);
         
@@ -70,12 +70,12 @@ fn spawn_atoms(
 
 
 fn diffuse_atoms(
-    mut atoms: Query<(&mut Transform, &mut Velocity),With<Atom>>,
+    mut atoms: Query<&mut Velocity,With<Atom>>,
     args: Res<Args>,
     mut rng: ResMut<SimRng>
     ){
 
-    for (mut pos, mut vel) in &mut atoms{
+    for mut vel in &mut atoms{
         let ang = rng.0.random::<f32>() * 2.0 * PI;
         vel.linvel.x = args.temperature * ang.cos() ;
         vel.linvel.y = args.temperature * ang.sin() ;

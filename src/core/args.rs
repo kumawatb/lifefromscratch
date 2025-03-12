@@ -26,7 +26,7 @@ pub struct Args {
     pub size_y: f32, 
 
     /// Atom diameter
-    #[arg(long, default_value_t = 10.0)]
+    #[arg(long, default_value_t = 20.0)]
     pub diameter: f32,
 
     /// Number of atom species (<=256)
@@ -38,7 +38,7 @@ pub struct Args {
     pub num_states: u16,
 
     /// Base temperature
-    #[arg(long, default_value_t = 1.0)]
+    #[arg(long, default_value_t = 30.0)]
     pub temperature: f32,
 
     /// Initial number of atoms

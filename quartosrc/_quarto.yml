@@ -1,0 +1,27 @@
+project:
+  type: book
+  output-dir: ../docs
+
+book:
+  title: Life from Scratch Development Log
+  sidebar:
+    title: LfS Devlog
+  author:
+    - name: Bhaskar Kumawat
+      email: kumawatb@umich.edu
+  date: last-modified
+  date-format: YYYY
+  chapters:
+    - index.qmd
+    - proposal.qmd
+  downloads: [pdf]
+
+format:
+  html:
+    theme: 
+      - simplex
+      - custom-light.scss
+  pdf:
+    documentclass: scrreprt
+    fontfamily: libertinus
+
