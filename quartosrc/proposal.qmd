@@ -8,6 +8,10 @@
 * Course Title: Computer Modeling of Complex systems
 * Term: Winter, 2025
 
+::: {.content-visible when-format="pdf"}
+An online version of this proposal can be found [here](https://kumawatb.github.io/lifefromscratch/proposal.html).
+:::
+
 ## Overview
 ### Goal
 I wish to model the origin of self-replication in a 2D world consisting of atoms that move and bond with each other based on some physical and chemical rules. My goal for this class project would be to get any sort of self-replication in this system after millions of time-steps, but I wish to extend it to get *Replication Involving Replicable Imperfections* (RIRI). RIRI is characterised by molecules (i.e. groups of bonded atoms) creating robust copies while also copying any errors that may have appeared previously in the process [@Benner2014-cq].
@@ -96,7 +100,7 @@ The code is available in the github repository [here](https://github.com/kumawat
 - MacOS: [M-series Processors](https://github.com/kumawatb/lifefromscratch/releases/download/v0.1.0-beta/lifefromscratch-macos-arm) (eg. M1-M4), [Intel](https://github.com/kumawatb/lifefromscratch/releases/download/v0.1.0-beta/lifefromscratch-macos-x86_64)
 
 ::: {style="font-size: 80%;"}
-*If you're not sure which one to get, just choose the first link for your operating system. If that doesn't work, you can try the next one.*
+*If you're not sure which one to get, just choose the first link for your operating system. If that doesn't work, you can try the next one. Please have a look at the [release page here](https://github.com/kumawatb/lifefromscratch/releases/tag/v0.1.0-beta) for instructions on running the program.*
 :::
 
 ## References
