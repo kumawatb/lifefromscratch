@@ -36,8 +36,8 @@ fn check_collisions_and_react(
 ) {
     for collision_event in collision_events.read() {
         if let  CollisionEvent::Started(entity1, entity2, _flags) = collision_event {
-                let (Atom(species1, state1), Transform{ translation: pos1, ..}) = atoms.get(*entity1).unwrap();
-                let (Atom(species2, state2), Transform{ translation: pos2, ..}) = atoms.get(*entity2).unwrap();
+                let (Atom(species1, state1), Transform{ translation: pos1, rotation: rot1, ..}) = atoms.get(*entity1).unwrap();
+                let (Atom(species2, state2), Transform{ translation: pos2, rotation: rot2, ..}) = atoms.get(*entity2).unwrap();
 
                 // Search reactions for a ReactionTypes::Combine match
                 for rxn in rxns.iter(){
@@ -53,26 +53,35 @@ fn check_collisions_and_react(
                             
                             let vec12 = (pos2 - pos1).truncate();
                             let direction = vec12.normalize();
-                            let midpoint = ((pos1 + pos2)/2.0).truncate();
+                            //let angle12 = rot1.angle_between(*rot2);
 
-                            // Spawn a joint connecting the atoms
-                            commands
-                            .spawn((
-                                Bond{},
-                                RigidBody::Dynamic,
-                                AdditionalMassProperties::Mass(0.01),
-                                Transform::from_xyz(midpoint.x, midpoint.y, 0.0),
-                                Velocity{
-                                    linvel: Vec2::new(0.0, 0.0),
-                                    angvel: 0.0
-                                }
-                            ))
-                            .with_children(|children| {
-                                children.spawn(ImpulseJoint::new(*entity1, RevoluteJointBuilder::new()
-                                        .local_anchor1(Vec2::new(0.0,0.0)).local_anchor2(-direction * (args.diameter/2.0) * 1.2)));
-                                children.spawn(ImpulseJoint::new(*entity2, RevoluteJointBuilder::new()
-                                        .local_anchor1(Vec2::new(0.0,0.0)).local_anchor2(direction * (args.diameter/2.0) * 1.2)));
-                            });
+
+                            // Define a prismatic joint
+                            let joint = FixedJointBuilder::new()
+                                .local_anchor1(Vec2::new(0.0,0.0))
+                                .local_anchor2( direction*args.diameter*1.2 );
+
+                            commands.entity(*entity1).insert(ImpulseJoint::new(*entity2, joint));
+
+
+                            // // Spawn a joint connecting the atoms
+                            // commands
+                            // .spawn((
+                            //     Bond{},
+                            //     RigidBody::Dynamic,
+                            //     AdditionalMassProperties::Mass(0.01),
+                            //     Transform::from_xyz(midpoint.x, midpoint.y, 0.0),
+                            //     Velocity{
+                            //         linvel: Vec2::new(0.0, 0.0),
+                            //         angvel: 0.0
+                            //     }
+                            // ))
+                            // .with_children(|children| {
+                            //     children.spawn(ImpulseJoint::new(*entity1, RevoluteJointBuilder::new()
+                            //             .local_anchor1(Vec2::new(0.0,0.0)).local_anchor2(-direction * (args.diameter/2.0) * 1.2)));
+                            //     children.spawn(ImpulseJoint::new(*entity2, RevoluteJointBuilder::new()
+                            //             .local_anchor1(Vec2::new(0.0,0.0)).local_anchor2(direction * (args.diameter/2.0) * 1.2)));
+                            // });
                         },
                         _ => {}
                     }

@@ -91,9 +91,9 @@ The most interesting parameter to vary here would be temperature, as it allows a
 
 The code is available in the github repository [here](https://github.com/kumawatb/lifefromscratch/tree/bevylife) (branch `bevylife`). The code is written in Rust and uses the [Bevy](https://bevyengine.org/) game engine and the [Rapier](https://rapier.rs/) physics library for improved performance (I tried writing these from scratch first but it's both time consuming and not as performative as using a pre-built engine). I have implemented atomic diffusion and collisions as of now. The collisions are also reported as events that I can use to make bonds. Rigid bonding (where the bonds are NOT "floppy") was easy to implement but is not as interesting. I'm currently trying to implement "floppy" bonds (a revolute joint). Pre-built binaries to run the current simulation on different platforms are available here:
 
-- Linux: [64-bit](x86_64-unknown-linux-gnu), [ARM](aarch64-unknown-linux-gnu)
-- Windows: [64-bit](x86_64-pc-windows-gnu), [ARM](aarch64-pc-windows-msvc)
-- MacOS: [M-series Processors](aarch64-apple-darwin) (eg. M1-M4), [Intel](x86_64-apple-darwin)
+- Linux: [64-bit](https://github.com/kumawatb/lifefromscratch/releases/download/v0.1.0-beta/lifefromscratch-linux-x86_64)
+- Windows: [64-bit](https://github.com/kumawatb/lifefromscratch/releases/download/v0.1.0-beta/lifefromscratch-win-x86_64.exe)
+- MacOS: [M-series Processors](https://github.com/kumawatb/lifefromscratch/releases/download/v0.1.0-beta/lifefromscratch-macos-arm) (eg. M1-M4), [Intel](https://github.com/kumawatb/lifefromscratch/releases/download/v0.1.0-beta/lifefromscratch-macos-x86_64)
 
 ::: {style="font-size: 80%;"}
 *If you're not sure which one to get, just choose the first link for your operating system. If that doesn't work, you can try the next one.*
