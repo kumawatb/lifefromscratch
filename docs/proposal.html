@@ -20,7 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -68,6 +88,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -135,7 +184,7 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#goal" id="toc-goal" class="nav-link" data-scroll-target="#goal">Goal</a></li>
   <li><a href="#rationale" id="toc-rationale" class="nav-link" data-scroll-target="#rationale">Rationale</a></li>
-  <li><a href="#main-micro-level-proceses-and-macro-level-dynamics-of-interest" id="toc-main-micro-level-proceses-and-macro-level-dynamics-of-interest" class="nav-link" data-scroll-target="#main-micro-level-proceses-and-macro-level-dynamics-of-interest">Main Micro-level Proceses and Macro-level Dynamics of Interest</a></li>
+  <li><a href="#main-micro-level-processes-and-macro-level-dynamics-of-interest" id="toc-main-micro-level-processes-and-macro-level-dynamics-of-interest" class="nav-link" data-scroll-target="#main-micro-level-processes-and-macro-level-dynamics-of-interest">Main Micro-level Processes and Macro-level Dynamics of Interest</a></li>
   </ul></li>
   <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a>
   <ul class="collapse">
@@ -147,7 +196,8 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#parameter-exploration" id="toc-parameter-exploration" class="nav-link" data-scroll-target="#parameter-exploration">6) Parameter Exploration</a></li>
   </ul></li>
   <li><a href="#questions-and-challenges" id="toc-questions-and-challenges" class="nav-link" data-scroll-target="#questions-and-challenges">Questions and challenges</a></li>
-  <li><a href="#code-or-pseudocode" id="toc-code-or-pseudocode" class="nav-link" data-scroll-target="#code-or-pseudocode">Code or Pseudocode</a></li>
+  <li><a href="#code" id="toc-code" class="nav-link" data-scroll-target="#code">Code</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
     </div>
@@ -186,75 +236,125 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
 <section id="goal" class="level3">
 <h3 class="anchored" data-anchor-id="goal">Goal</h3>
-<p><em>Provide a short, 1-3 sentence description of the goal of your model and/or the question(s) you hope to answer.</em></p>
+<p>I wish to model the origin of self-replication in a 2D world consisting of atoms that move and bond with each other based on some physical and chemical rules. My goal for this class project would be to get any sort of self-replication in this system after millions of time-steps, but I wish to extend it to get <em>Replication Involving Replicable Imperfections</em> (RIRI). RIRI is characterised by molecules (i.e.&nbsp;groups of bonded atoms) creating robust copies while also copying any errors that may have appeared previously in the process <span class="citation" data-cites="Benner2014-cq">(<a href="proposal.html#ref-Benner2014-cq" role="doc-biblioref">Benner 2014</a>)</span>.</p>
 </section>
 <section id="rationale" class="level3">
 <h3 class="anchored" data-anchor-id="rationale">Rationale</h3>
-<p><em>Give a short justification of why the overall modeling approach you are taking is appropriate for addressing the question/goal above.</em></p>
+<p>Out of all possible <em>chemistries</em> (set of bonding rules between species of atoms) that can exist, only some are likely to give rise to self-replicating molecules. Further, the environmental conditions (other atoms in the surroundings, temperature etc.) can vitally affect whether a chemistry is able to sustain self-replication. This project aims to explore the conditions that are required for self-replication to arise in a simple physical system, given arbitrary interaction rules and environments. I believe that a 2D world consisting of atoms that follow some physics-y rules (eg. diffusion and collisions) should be sufficient to observe these phenomena. Indeed, simpler, yet similar grid-based simulations have shown this “origin of self-replication” for one particular set of rules <span class="citation" data-cites="Hutton2002-gz">(<a href="proposal.html#ref-Hutton2002-gz" role="doc-biblioref">Hutton 2002</a>)</span>. However, I wish to test this for a large number of randomly generated chemistries to test some general hypothesis about origin of life.</p>
 </section>
-<section id="main-micro-level-proceses-and-macro-level-dynamics-of-interest" class="level3">
-<h3 class="anchored" data-anchor-id="main-micro-level-proceses-and-macro-level-dynamics-of-interest">Main Micro-level Proceses and Macro-level Dynamics of Interest</h3>
-<p><em>Short overview of the key processes and/or relationships you are interested in using your model to explore. From the micro-level processes (i.e.&nbsp;interactions between agents, agents and the environment, etc.), what macro-level, overall emergent dynamics are you interested in examining?</em></p>
-<p><em>If you wish, you may also include a discussion here of any design concepts from the ODD protocol that you are interested in addressing.</em></p>
+<section id="main-micro-level-processes-and-macro-level-dynamics-of-interest" class="level3">
+<h3 class="anchored" data-anchor-id="main-micro-level-processes-and-macro-level-dynamics-of-interest">Main Micro-level Processes and Macro-level Dynamics of Interest</h3>
+<p>The simulation world that I’m building consists of a 2D plane over which a large number of circular “atom” agents reside. Each atom has a <code>species</code> and a <code>state</code> (both being integer values between 0 and 255). The main processes that these atoms undergo and the expected emergent dynamics are as follows:</p>
+<p><strong><em>Micro-level processes</em></strong></p>
+<ul>
+<li>Atomic Diffusion: Each atom performs a random 2D motion similar to a Brownian particle in a viscous fluid.</li>
+<li>Atomic Collisions: Atoms are solid bodies and collide with each other when they come in contact.</li>
+<li>Bonding &amp; bond-breaking: The program allows the user to specify any chemistry in terms of creation and decomposition of bonds between atoms. Bonds are created and broken probabilistically based on collisions. If two atoms of given species and state (as specified by the <em>chemistry</em>) collide, they can form a bond with some probability. On the other hand, if two atoms of given species and state (also specified in the chemistry) are already bonded, they may break with some probability.</li>
+</ul>
+<p><strong><em>Macro-level/emergent dynamics</em></strong></p>
+<ul>
+<li>Self-replication: Self-replication is described as a process where groups of atoms (or molecules) are able to sustain continual creation of self-similar copies in the simulation world. Previous work has shown this is indeed possible in a similar system, but only for a very specific set of bonding rules <span class="citation" data-cites="Hutton2002-gz">(<a href="proposal.html#ref-Hutton2002-gz" role="doc-biblioref">Hutton 2002</a>)</span>.</li>
+<li>Evolution: Evolution is the process by which these molecules change as they self-replicate, but in a way that these errors are retained in future replications. Thus, RIRI (Replication involving replicable imperfections) is an important requirement for us to observe evolution in this system <span class="citation" data-cites="Benner2014-cq Fontana1998-de">(<a href="proposal.html#ref-Benner2014-cq" role="doc-biblioref">Benner 2014</a>; <a href="proposal.html#ref-Fontana1998-de" role="doc-biblioref">Fontana and Schuster 1998</a>)</span>.</li>
+</ul>
 </section>
 </section>
 <section id="model" class="level2">
 <h2 class="anchored" data-anchor-id="model">Model</h2>
-<p><em>Give a brief overall description of the structure of your model, with a 1-2 sentence overview of the type of model your are using, the general types of agents you are considering, the environment, and how you plan to implement time.</em></p>
-<p><strong><em>Model diagram</em></strong>: Include an overall model diagram illustrating the general structure of your model, as well as a flowchart illustrating how the model processes will run at each time step.*</p>
+<p>The model consists of a 2D plane with circular atoms that move around and collide with each other. Collisions can lead to “reactions” where two atoms (assuming they are compatible) can bond with each other to form a molecule. Molecules can also decompose into atoms based on the reactions that are allowed. The set of reactions being used for a given simulation is called a “chemistry”. The following diagram shows an example chemistry and the resulting simulation world at a particular time.</p>
+<div id="fig-proposal" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-proposal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="./images/proposalschematic.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-proposal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Schematic of the simulation world and the flow of the model. Colors of the atoms denote their species and the integer label denotes their state. States can change during reactions but the species is invariant.
+</figcaption>
+</figure>
+</div>
 <section id="environment" class="level3">
 <h3 class="anchored" data-anchor-id="environment">1) Environment</h3>
-<p><em>Give an overall description of the environment in your model. Things to address if they apply:</em></p>
-<ul>
-<li>Boundary conditions (e.g.&nbsp;wrapping, infinite, etc.)</li>
-<li>Dimensionality (e.g.&nbsp;1D, 2D, etc.) or type of environment (e.g.&nbsp;is it a grid? Open space?)</li>
-<li>Does your environment have properties? (e.g.&nbsp;resources at that location in the environment, different conditions, etc.)</li>
-<li>Does your environment have actions/procedures/processes that occur? (E.g. growth of plants on blank grid spaces might be an example)</li>
-</ul>
-<p><em>Be sure to give a complete enough description that we can understand how the environment is structured, how it may change, and how it may interact with your agents (described further below).</em></p>
+<p>The will have a finite, continuous 2D space with reflecting boundaries (i.e.&nbsp;walls). For now, I’m keeping the temperature constant across the world, but I envision having the temperature as a continuous function over the simulation environment. I also plan to add some sources and sinks in the world for atoms to enter and leave the system, thus allowing some sort of “selection” to emerge naturally.</p>
 </section>
 <section id="agents" class="level3">
 <h3 class="anchored" data-anchor-id="agents">2) Agents</h3>
-<p><em>Give a more detailed description of the “agents” in the system, addressing their properties, actions, and rules. Specifically, be sure to address:</em></p>
-<ul>
-<li>Agent properties (e.g.&nbsp;age, location, ID, etc.)</li>
-<li>Agent actions (e.g.&nbsp;move, consume, reproduce, die, etc.), and how these actions affect the agent, other agents, and the environment</li>
-<li><em>Agent rules: Give a brief overview of the rules which govern which actions will occur and how they depend on the agent properties (e.g.&nbsp;a rule might be that if there is not enough food, the agent will move to a new location in search of food). </em></li>
-<li>Interaction topology: give a description of who interacts with whom in the system. Are your agents perfectly mixed? Spatial proximity? Along a network? Cellular automata neighborhood? Are interactions only between agents, or with the environment as well?</li>
-</ul>
-<p><em>Each of the above can be (for example) a bulleted list with descriptions, or a table with descriptions, prose format, etc.</em></p>
+<p>The agents are circular “atoms” in a 2D world. All agents are the same size and have both a position in the world and a velocity (both of which are 2-dimensional float vectors). Each atom also has a “species” and a “state” property, both of which are integral values between 0 and 255. The species of an atom remains constant throughout the simulation but the state can change during reactions. Atoms diffuse through the world performing a random walk and can react with other atoms when they collide. These reactions can either form a “bond” between atoms, joining them together as they move around the world, or simply change their state without bonding. Bonded atoms (a <em>molecule</em>) can also decompose into their constituents. Interactions are entirely dependent on collisions and thus on spatial proximity between the atoms.</p>
 </section>
 <section id="model-scheduling" class="level3">
 <h3 class="anchored" data-anchor-id="model-scheduling">3) Model Scheduling</h3>
-<p><em>Provide a high level, step-by-step description of your schedule during each “tick” of the model (or whatever the equivalent is if you are using a different implementation of time). What does an agent, cell, etc. do on a given turn? Provide a step-by-step description of what happens on a given turn for each part of your model. This can be a good place to include the flowchart diagram mentioned above.</em></p>
-<ol type="1">
-<li>Step 1</li>
-<li>Step 2</li>
-<li>Etc…</li>
-</ol>
+<p>A schematic of the model schedule is shown in figure <a href="#fig-proposal" class="quarto-xref">Figure&nbsp;<span>1</span></a>. The entire setup can be essentially divided into four parts.</p>
+<ul>
+<li><strong>Initialization</strong>: Here, the program initializes the parameters and chemistries required for the simulation. It also generates a random initial state for the system based on a random number seed and the initial number of atoms (provided as parameters).</li>
+</ul>
+<p>The following steps are repeated until the user ends the simulation:</p>
+<ul>
+<li><strong>Diffusion</strong>: Here, each atom is assigned a random velocity in any direction (with magnitude proportional the the <code>temperature</code> parameter). Then, the simulation is progressed by a single time-step (of length <span class="math inline">\(dt\)</span>) so the velocity change appears as a displacement of the atoms.</li>
+<li><strong>Resolve collisions/bonds</strong>: In this step, the simulation takes note of all collisions (overlapping atoms) and bond extensions and tries to resolve them by moving the atoms by some computed distance. This step is performed 8x times because sometimes resolving collision between two atoms may create other collisions in the world.</li>
+<li><strong>Reaction</strong>: Here, all atom pairs that collided with each other are checked for a “reaction” by looking their species/states up in the user specified chemistry. If two atoms can react, they are either bonded or their state is changed probabilistically based on the reaction probability (also specified by the user). Bonded atoms are also checked for decomposition.</li>
+</ul>
 </section>
 <section id="model-parameters-and-initialization" class="level3">
 <h3 class="anchored" data-anchor-id="model-parameters-and-initialization">4) Model Parameters and Initialization</h3>
-<p><em>Describe and list any global parameters you will be applying in your model.</em></p>
-<p><em>Describe how your model will be initialized</em></p>
+<p>The main user defined parameters (apart from the chemistry) are as follows:</p>
+<ul>
+<li><code>size_x</code>, <code>size_y</code>: Size of the simulation world in arbitrary units.</li>
+<li><code>diameter</code>: Diameter of an atom</li>
+<li><code>temperature</code>: Temperature of the world, determines how random an atoms’ movement is.</li>
+<li><code>init_atoms</code>: Initial number of atoms in the world.</li>
+</ul>
+<p>The model is initialized by first obtaining these parameters from the user through the command line. Then, the program randomly samples <code>init_atoms</code> number of locations in the simulation world to create the initial world state.</p>
 </section>
 <section id="assessment-and-outcome-measures" class="level3">
 <h3 class="anchored" data-anchor-id="assessment-and-outcome-measures">5) Assessment and Outcome Measures</h3>
-<p>*What quantitative metrics and/or qualitative features will you use to assess your model outcomes?</p>
-<p>What analyses do you plan to run, and how will these analyses help you to address the question or goal that you started with?*</p>
+<p>For the purpose of quantifying self-replication, I will output all molecules and their numbers that are present in the system every few time-steps. These numbers can be simply plotted over time to check if there is a sudden explosive increase in the population of a particular molecule, indicating self-replication.</p>
+<p>I will perform a similar analysis with a lot of randomly generated chemistries to find chemistries that allow self-replication. Then, I will narrow down on chemistries where the succesion between replicating molecules is such that it qualifies for the definition of replication with replicable imperfections: i.e., new self-replicators are similar to old self-replicators but are also stable and do not revert to an earlier state.</p>
 </section>
 <section id="parameter-exploration" class="level3">
 <h3 class="anchored" data-anchor-id="parameter-exploration">6) Parameter Exploration</h3>
-<p><em>What parameters are you most interested in sweeping through or sampling? What value ranges do you expect to look at for your analysis? How will this help you to answer the question or goal that you started with?</em></p>
+<p>The most interesting parameter to vary here would be temperature, as it allows an increase in the possiblity of chance encounters between far apart molecules and atoms. However, instead of varying the parameter between simulations, I might opt for a larger world with heterogeneous temperature at different points in the world. I hypothesis that a more “hetergeneous” world such as this would lead to self-replication faster than a homogeneous temperature simulation.</p>
 </section>
 </section>
 <section id="questions-and-challenges" class="level2">
 <h2 class="anchored" data-anchor-id="questions-and-challenges">Questions and challenges</h2>
-<p><em>Include any questions you have, issues or problems you are encountering, or areas that you would like to get feedback on here! This will help your classmates and me provide useful comments/questions.</em></p>
+<p><strong>Question</strong></p>
+<ol type="1">
+<li>Rigid vs flexible bonds: There are essentially two ways to create a bond between atoms. In the first case, the atoms are allowed to rotate around the bond and a large molecule can essentially flop around in the world and does not have a rigid 2D structure. On the other hand, a rigid bond restricts the rotation of the atoms and fixes the structure of the molecule to what it was when the bond was formed. I feel like the flexible case would be more interesting (both visually and in terms of allowing self-replication) but I’m not sure if that’s realistic (because real molecules are actually somewhat rigidly bonded to each other).</li>
+</ol>
+<p><strong>Challenge</strong></p>
+<ol type="1">
+<li>Moving to a larger simulation: According to my tests, the simulation can support around 100,000 atoms at decent speed on a somewhat powerful personal computer. I would like to scale this further and go upto maybe 1-10 million particles. I’m not sure about the techniques I could use for this, maybe performing the simulation on a GPU?</li>
+</ol>
 </section>
-<section id="code-or-pseudocode" class="level2">
-<h2 class="anchored" data-anchor-id="code-or-pseudocode">Code or Pseudocode</h2>
-<p><em>If you have begun to code your model, include a first pass of the code you are using here. If you haven’t started yet, that’s okay! Psedocode is great too—as a first step, you can take the flowchart you made in the previous sections, and start writing pseudocode based on that.</em></p>
+<section id="code" class="level2">
+<h2 class="anchored" data-anchor-id="code">Code</h2>
+<p>The code is available in the github repository <a href="https://github.com/kumawatb/lifefromscratch/tree/bevylife">here</a> (branch <code>bevylife</code>). The code is written in Rust and uses the <a href="https://bevyengine.org/">Bevy</a> game engine and the <a href="https://rapier.rs/">Rapier</a> physics library for improved performance (I tried writing these from scratch first but it’s both time consuming and not as performative as using a pre-built engine). I have implemented atomic diffusion and collisions as of now. The collisions are also reported as events that I can use to make bonds. Rigid bonding (where the bonds are NOT “floppy”) was easy to implement but is not as interesting. I’m currently trying to implement “floppy” bonds (a revolute joint). Pre-built binaries to run the current simulation on different platforms are available here:</p>
+<ul>
+<li>Linux: <a href="">64-bit</a>, <a href="aarch64-unknown-linux-gnu">ARM</a></li>
+<li>Windows: <a href="x86_64-pc-windows-gnu">64-bit</a>, <a href="aarch64-pc-windows-msvc">ARM</a></li>
+<li>MacOS: <a href="aarch64-apple-darwin">M-series Processors</a> (eg. M1-M4), <a href="x86_64-apple-darwin">Intel</a></li>
+</ul>
+<div style="font-size: 80%;">
+<p><em>If you’re not sure which one to get, just choose the first link for your operating system. If that doesn’t work, you can try the next one.</em></p>
+</div>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-Benner2014-cq" class="csl-entry" role="listitem">
+Benner, Steven A. 2014. <span>“Paradoxes in the Origin of Life.”</span>
+<em>Origins of Life and Evolution of the Biosphere: The Journal of the
+International Society for the Study of the Origin of Life</em> 44
+(December): 339–43.
+</div>
+<div id="ref-Fontana1998-de" class="csl-entry" role="listitem">
+Fontana, W, and P Schuster. 1998. <span>“Continuity in Evolution: On the
+Nature of Transitions.”</span> <em>Science (New York, N.Y.)</em> 280
+(May): 1451–55.
+</div>
+<div id="ref-Hutton2002-gz" class="csl-entry" role="listitem">
+Hutton, Tim J. 2002. <span>“Evolvable Self-Replicating Molecules in an
+Artificial Chemistry.”</span> <em>Artificial Life</em> 8: 341–56.
+</div>
+</div>
 
 
 </section>

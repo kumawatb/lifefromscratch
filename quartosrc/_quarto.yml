@@ -16,6 +16,8 @@ book:
     - proposal.qmd
   downloads: [pdf]
 
+bibliography: bibliography/proposal.bib
+
 format:
   html:
     theme: 
