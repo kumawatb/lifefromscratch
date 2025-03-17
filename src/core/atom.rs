@@ -49,7 +49,10 @@ fn spawn_atoms(
 
         let atombundle = (
             Atom(species, state), 
-            Transform::from_xyz(  window_width * (rng.0.random::<f32>() * 1. - 0.5),  window_height * (rng.0.random::<f32>() * 1. - 0.5), 0.0),
+            Transform{
+                translation: Vec3::new(window_width * (rng.0.random::<f32>() * 1. - 0.5),  window_height * (rng.0.random::<f32>() * 1. - 0.5), 0.0),
+                ..Default::default()
+            },
             Velocity{
                 linvel: Vec2::new(0.0,0.0),
                 angvel: 0.0
