@@ -328,9 +328,9 @@ Figure&nbsp;1: Schematic of the simulation world and the flow of the model. Colo
 <h2 class="anchored" data-anchor-id="code">Code</h2>
 <p>The code is available in the github repository <a href="https://github.com/kumawatb/lifefromscratch/tree/bevylife">here</a> (branch <code>bevylife</code>). The code is written in Rust and uses the <a href="https://bevyengine.org/">Bevy</a> game engine and the <a href="https://rapier.rs/">Rapier</a> physics library for improved performance (I tried writing these from scratch first but it’s both time consuming and not as performative as using a pre-built engine). I have implemented atomic diffusion and collisions as of now. The collisions are also reported as events that I can use to make bonds. Rigid bonding (where the bonds are NOT “floppy”) was easy to implement but is not as interesting. I’m currently trying to implement “floppy” bonds (a revolute joint). Pre-built binaries to run the current simulation on different platforms are available here:</p>
 <ul>
-<li>Linux: <a href="">64-bit</a>, <a href="aarch64-unknown-linux-gnu">ARM</a></li>
-<li>Windows: <a href="x86_64-pc-windows-gnu">64-bit</a>, <a href="aarch64-pc-windows-msvc">ARM</a></li>
-<li>MacOS: <a href="aarch64-apple-darwin">M-series Processors</a> (eg. M1-M4), <a href="x86_64-apple-darwin">Intel</a></li>
+<li>Linux: <a href="https://github.com/kumawatb/lifefromscratch/releases/download/v0.1.0-beta/lifefromscratch-linux-x86_64">64-bit</a></li>
+<li>Windows: <a href="https://github.com/kumawatb/lifefromscratch/releases/download/v0.1.0-beta/lifefromscratch-win-x86_64.exe">64-bit</a></li>
+<li>MacOS: <a href="https://github.com/kumawatb/lifefromscratch/releases/download/v0.1.0-beta/lifefromscratch-macos-arm">M-series Processors</a> (eg. M1-M4), <a href="https://github.com/kumawatb/lifefromscratch/releases/download/v0.1.0-beta/lifefromscratch-macos-x86_64">Intel</a></li>
 </ul>
 <div style="font-size: 80%;">
 <p><em>If you’re not sure which one to get, just choose the first link for your operating system. If that doesn’t work, you can try the next one.</em></p>
