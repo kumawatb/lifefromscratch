@@ -1,7 +1,7 @@
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use avian2d::prelude::*;
 use colorgrad::Gradient;
 use rand::Rng;
 use crate::core::args::Args;
@@ -53,18 +53,12 @@ fn spawn_atoms(
                 translation: Vec3::new(window_width * (rng.0.random::<f32>() * 1. - 0.5),  window_height * (rng.0.random::<f32>() * 1. - 0.5), 0.0),
                 ..Default::default()
             },
-            Velocity{
-                linvel: Vec2::new(0.0,0.0),
-                angvel: 0.0
-            },
+            LinearVelocity(Vec2::new(0.0,0.0)),
+            AngularVelocity(0.0),
             Mesh2d(mesh),  
             MeshMaterial2d(material), 
             RigidBody::Dynamic,
-            Collider::ball(args.diameter/2.0),
-            Friction::coefficient(0.0),
-            GravityScale(0.0),
-            Sleeping::disabled(),
-            ActiveEvents::COLLISION_EVENTS
+            Collider::circle(args.diameter/2.0),
         );
         commands.spawn(atombundle);
         
@@ -73,14 +67,15 @@ fn spawn_atoms(
 
 
 fn diffuse_atoms(
-    mut atoms: Query<&mut Velocity,With<Atom>>,
+    mut atoms: Query<&mut LinearVelocity,With<Atom>>,
     args: Res<Args>,
-    mut rng: ResMut<SimRng>
+    mut rng: ResMut<SimRng>,
+    time: Res<Time>
     ){
 
     for mut vel in &mut atoms{
         let ang = rng.0.random::<f32>() * 2.0 * PI;
-        vel.linvel.x = args.temperature * ang.cos() ;
-        vel.linvel.y = args.temperature * ang.sin() ;
+        vel.x = args.temperature * args.diameter * ang.cos() * time.delta_secs();
+        vel.y = args.temperature * args.diameter * ang.sin() * time.delta_secs();
     }
 }

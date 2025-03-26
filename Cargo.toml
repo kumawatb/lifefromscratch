@@ -4,8 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+ahash = "0.8.11"
+avian2d = "0.2.1"
 bevy = "0.15.3"
-bevy_rapier2d = { version = "0.29.0", features = ["simd-stable", "parallel" ] }
+#bevy_rapier2d = { version = "0.29.0", features = ["simd-stable", "parallel" ] }
 clap = { version = "4.5.29", features = ["derive"] }
 colorgrad = "0.7.0"
 rand = "0.9.0"
