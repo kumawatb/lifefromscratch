@@ -30,11 +30,11 @@ pub struct Args {
     pub diameter: f32,
 
     /// Number of atom species (<=256)
-    #[arg(long, default_value_t = 256)]
+    #[arg(long, default_value_t = 4)]
     pub num_species: u16,
 
     /// Number of atom states (<=256)
-    #[arg(long, default_value_t = 256)]
+    #[arg(long, default_value_t = 4)]
     pub num_states: u16,
 
     /// Base temperature
@@ -59,5 +59,9 @@ pub struct Args {
 
     /// Seed for random number generator
     #[arg(long, default_value_t=0)]
-    pub seed: u64
+    pub seed: u64,
+
+    /// Chemistry file
+    #[arg(long, default_value_t=String::from("./chemistry.cfg"))]
+    pub chempath: String
 }

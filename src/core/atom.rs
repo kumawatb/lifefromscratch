@@ -38,10 +38,10 @@ fn spawn_atoms(
 
     // Add atoms to random positions inside the world
     for _ in 0..args.init_atoms{
-        let species = 0; //rng.0.random::<u8>();
-        let state: u8 = 0; //rng.0.random::<u8>();
+        let species = rng.0.random_range(0..args.num_species as u8);
+        let state: u8 = rng.0.random_range(0..args.num_states as u8);
 
-        let rgb = colorgrad::preset::rainbow().colors(256)[species as usize].to_linear_rgba();
+        let rgb = colorgrad::preset::rainbow().colors(args.num_species as usize)[species as usize].to_linear_rgba();
         let color = Color::srgb(rgb[0] as f32, rgb[1] as f32, rgb[2] as f32);
 
         let mesh = meshes.add(shape);

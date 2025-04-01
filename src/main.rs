@@ -6,7 +6,6 @@ use crate::core::{args::ArgsPlugin, atom::AtomsPlugin, args::Args, chemistry::Ch
 use rand_xoshiro::Xoshiro256Plus;
 
 
-const PIXELS_PER_METER: f32 = 1.0;
 const WINDOW_SIZE_X: f32 = 800.0 ;
 const WINDOW_SIZE_Y: f32 = 800.0 ;
 

@@ -1,7 +1,8 @@
+use std::{fs::File, io::{BufRead, BufReader}};
+
 use ahash::AHashSet;
 use bevy::prelude::*;
 use avian2d::prelude::*;
-
 use super::{atom::Atom, args::Args};
 
 /// Bevy Plugin to initialize and work with atoms
@@ -16,109 +17,73 @@ impl Plugin for ChemistryPlugin {
 }
 
 
-fn load_chemistry(mut commands: Commands){
-    // Load chemistry from a file later
-    // For now, create a simple reaction
-    commands.spawn( ReactionTypes::Combine((0,0), (0,0), ((0,1),(0,1))) );
+fn load_chemistry(mut commands: Commands, args: Res<Args>){
+    // Load chemistry from a file
+    let chemistry = Chemistry::new(args.chempath.clone());
+
+    for rxn in chemistry.iter_rxn(){
+     commands.spawn(*rxn);
+    }
+
 }
 
 /// Enum to represent a reaction in the simulation
-#[derive(Component)]
-enum ReactionTypes{
+#[derive(Component, Clone, Copy)]
+pub enum Reaction{
+
+    /// Combine atoms on collision
     Combine((u8,u8), (u8,u8), ((u8,u8),(u8,u8))), // (species1, state1) + (species2, state2) -> ((species1, state1')=(species2, state2'))
-    Decompose(((u8,u8), (u8,u8)), (u8,u8), (u8,u8)) // ((species1, state1)=(species2, state2)) -> (species1, state1') + (species2, state2')
+
+    /// Decompose atoms
+    Decompose(((u8,u8), (u8,u8)), (u8,u8), (u8,u8)), // ((species1, state1)=(species2, state2)) -> (species1, state1') + (species2, state2')
+
+    /// Excite atoms on collision
+    Excite((u8,u8), (u8,u8), (u8,u8), (u8,u8)) // (species1, state1) + (species2, state2) -> (species1, state1') + (species2, state2')
 }
 
 fn check_collisions_and_react(
     mut commands: Commands,
     mut collision_events: EventReader<Collision>,
-    atoms: Query<(&Atom, &Transform)>,
-    rxns: Query<&ReactionTypes>,
+    mut atoms: Query<&mut Atom>,
+    rxns: Query<&Reaction>,
     mut bmap: ResMut<BondMap>,
     args: Res<Args>
 ) {
     for Collision(contacts) in collision_events.read() {
-        let (Atom(species1, state1), Transform{ translation: pos1, rotation: rot1, ..}) = atoms.get(contacts.entity1).unwrap();
-        let (Atom(species2, state2), Transform{ translation: pos2, rotation: rot2, ..}) = atoms.get(contacts.entity2).unwrap();
+        let [mut atom1, mut atom2] = atoms.get_many_mut([contacts.entity1, contacts.entity2]).unwrap();
 
         if ! ( bmap.bonds.contains(&(contacts.entity1, contacts.entity2))
              || bmap.bonds.contains(&(contacts.entity2, contacts.entity1))) 
         {
             for rxn in rxns.iter(){
                 match rxn {
-                    ReactionTypes::Combine(
+                    Reaction::Combine(
                         (reac1, reac1_state),(reac2, reac2_state), 
-                        ((prod1, prod1_state) , (prod2, prod2_state)) ) 
-                        if *reac1 == *species1 && *reac2 == *species2 && *reac1_state == *state1 && *reac2_state == *state2  => 
+                        ((_, prod1_state) , (_, prod2_state)) ) 
+                        if *reac1 == atom1.0 && *reac2 == atom2.0 && *reac1_state == atom1.1 && *reac2_state == atom2.1  => 
                         {
-                            
-                            commands.spawn(DistanceJoint::new(contacts.entity1, contacts.entity2).with_rest_length(args.diameter*1.2));
+                            commands.spawn(DistanceJoint::new(contacts.entity1, contacts.entity2).with_rest_length(args.diameter*1.1).with_linear_velocity_damping(20.0));
 
-                    
+                            atom1.1 = *prod1_state;
+                            atom2.1 = *prod2_state;
+
+                            bmap.bonds.insert((contacts.entity1, contacts.entity2));
+
+                            //println!("{:?}", atoms.get(contacts.entity1).unwrap().1);
+
                         }, 
-                    
+                    Reaction::Excite( 
+                        (reac1, reac1_state), (reac2, reac2_state) ,
+                        (_, prod1_state), (_, prod2_state) ) 
+                        if *reac1 == atom1.0 && *reac2 == atom2.0  && *reac1_state == atom1.1 && *reac2_state == atom2.1 => {
+                            atom1.1 = *prod1_state;
+                            atom2.1 = *prod2_state;
+                        },
                     _ => {}               
                 }
             }
         }
     }
-
-        // if let  CollisionEvent::Started(entity1, entity2, _flags) = collision_event {
-        //     let (Atom(species1, state1), Transform{ translation: pos1, rotation: rot1, ..}) = atoms.get(*entity1).unwrap();
-        //     let (Atom(species2, state2), Transform{ translation: pos2, rotation: rot2, ..}) = atoms.get(*entity2).unwrap();
-
-        //     if ! (bmap.bonds.contains(&(*entity1, *entity2))
-        //     || bmap.bonds.contains(&(*entity2, *entity1))) {
-        //         // Search reactions for a ReactionTypes::Combine match
-        //         for rxn in rxns.iter(){
-        //             match rxn {
-
-        //                 // If colliding atoms' species and states match a reaction's reactants
-        //                 ReactionTypes::Combine(
-        //                     (reac1, reac1_state),(reac2, reac2_state), 
-        //                     ((prod1, prod1_state) , (prod2, prod2_state)) ) 
-        //                     if *reac1 == *species1 && *reac2 == *species2 && *reac1_state == *state1 && *reac2_state == *state2 => 
-        //                 {
-                            
-        //                     let vec12 = (pos2 - pos1).truncate();
-        //                     let midpoint = (pos2+pos1)/2.0;
-
-        //                     // Revolute trial 300
-        //                     // let revjoint1 = RevoluteJointBuilder::new()
-        //                     // .local_anchor1(Vec2::new(0.0, 0.0))
-        //                     // .local_anchor2(Vec2::new(-args.diameter*0.6, 0.0));
-
-
-
-        //                     // let revjoint2 = RevoluteJointBuilder::new()
-        //                     // .local_anchor1(Vec2::new(0.0, 0.0))
-        //                     // .local_anchor2(Vec2::new(args.diameter*0.6, 0.0));
-
-
-        //                     // let bond = commands.spawn((
-        //                     //     RigidBody::Dynamic,
-        //                     //     Transform {
-        //                     //         translation: midpoint,
-        //                     //         rotation: Quat::from_rotation_z(vec12.y.atan2(vec12.x)),
-        //                     //         ..Default::default()
-        //                     //     },
-        //                     //     AdditionalMassProperties::MassProperties(MassProperties { mass: 0.00001, principal_inertia: 0.00001, ..Default::default() }),
-        //                     //     Friction::coefficient(0.0),
-        //                     //     GravityScale(0.0)
-        //                     // )).id();
-
-        //                     // commands.entity(bond).with_children(|cmd| {
-        //                     //     cmd.spawn(ImpulseJoint::new(*entity1, revjoint1));
-        //                     //     cmd.spawn(ImpulseJoint::new(*entity2, revjoint2));
-        //                     // });
-
-        //                     // bmap.bonds.insert((*entity1, *entity2));                        
-        //                 },
-        //                 _ => {}
-        //             }
-        //         }
-        //     }
-        // }        
 }
 
 
@@ -131,6 +96,122 @@ impl Default for BondMap{
     fn default() -> Self{
         Self{
             bonds: AHashSet::new()
+        }
+    }
+}
+
+pub struct Chemistry{
+    rxns: Vec<Reaction>
+}
+
+impl Chemistry{
+    pub fn new(chempath: String) -> Self {
+
+        let mut all_reactions: Vec<Reaction> = Vec::new();
+
+        // Use chemfile specification to create reactions
+        let f = File::open(chempath).expect("Unable to open chemistry file");
+        let buffer = BufReader::new(f); 
+        
+        for line in buffer.lines(){
+            let line = line.expect("Unable to read line from chemistry file");
+            let mut line = line.trim().replace(" ", "").replace("\t", "").replace("\r", "");
+            let offset = line.find("#").unwrap_or(line.len());
+            line.truncate(offset);
+
+            if !(line.is_empty() || line.starts_with('#')) {
+                let parts: Vec<&str> = line.split("->").collect();
+                if parts.len() != 2 {
+                    println!("Invalid reaction format, skipping line: {}", line);
+                    continue;
+                }
+                let reactant_substr = parts[0];
+                let product_substr = parts[1];
+
+                if reactant_substr.contains("+") && product_substr.contains("=") {
+                    // Combination reaction
+                    let rxn_components = Chemistry::get_reactants_and_products(reactant_substr, product_substr, "+", "=");
+
+                    if let Some((reac1, reac2, prod1, prod2)) = rxn_components {
+                        all_reactions.push(Reaction::Combine(reac1, reac2, (prod1, prod2)));
+                    } else {
+                        println!("Invalid reaction format, skipping line: {}", line);
+                    }
+
+                } else if reactant_substr.contains("=") && product_substr.contains("+") {
+                    // Decomposition reaction
+
+                    let rxn_components = Chemistry::get_reactants_and_products(reactant_substr, product_substr, "=", "+");
+
+                    if let Some((reac1, reac2, prod1, prod2)) = rxn_components {
+                        all_reactions.push(Reaction::Decompose((reac1, reac2), prod1, prod2));
+                    } else {
+                        println!("Invalid reaction format, skipping line: {}", line);
+                    }
+
+                } else if reactant_substr.contains("+") && product_substr.contains("+") {
+                    // Excitation reaction
+                    let rxn_components = Chemistry::get_reactants_and_products(reactant_substr, product_substr, "+", "+");
+
+                    if let Some((reac1, reac2, prod1, prod2)) = rxn_components {
+                        all_reactions.push(Reaction::Excite(reac1, reac2, prod1, prod2));
+                    } else {
+                        println!("Invalid reaction format, skipping line: {}", line);
+                    }
+
+                }
+
+
+            } 
+
+        }
+
+        Chemistry {
+            rxns: all_reactions
+        }
+    }
+
+    pub fn iter_rxn(&self) -> impl Iterator<Item = &Reaction> {
+        self.rxns.iter()
+    }
+
+    pub fn get_reactants_and_products(reactant_substr: &str, product_substr: &str, char1: &str, char2: &str) -> Option<((u8,u8), (u8,u8), (u8,u8),(u8,u8))> {
+        let reactants = reactant_substr.split(char1).collect::<Vec<&str>>();
+        let products= product_substr.split(char2).collect::<Vec<&str>>();
+
+        if reactants.len() != 2 || products.len() != 2 {
+            return None;
+        }
+
+        let reac1 = Chemistry::parse_species_and_state(reactants[0]);
+        let reac2 = Chemistry::parse_species_and_state(reactants[1]);
+        let prod1 = Chemistry::parse_species_and_state(products[0]);
+        let prod2 = Chemistry::parse_species_and_state(products[1]);
+
+        if let (Some(reac1), Some(reac2), Some(prod1), Some(prod2)) = (reac1, reac2, prod1, prod2) {
+            Some(
+                (
+                    reac1,
+                    reac2,
+                    prod1,
+                    prod2
+                )
+            )
+        } else{
+            None
+        }
+    }
+
+    pub fn parse_species_and_state(instr: &str) -> Option<(u8,u8)> {
+        let parts = instr.split(['{','}']).collect::<Vec<&str>>();
+        let spec = u8::from_str_radix(parts[0], 16);
+        let state = u8::from_str_radix(parts[1], 16);
+
+        if let (Ok(spec), Ok(state)) = (spec, state) {
+            Some((spec, state))
+        } else {
+            println!("Invalid species or state: {} {}", parts[0], parts[1]);
+            None
         }
     }
 }
