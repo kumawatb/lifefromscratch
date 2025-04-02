@@ -15,6 +15,7 @@ impl Plugin for AtomsPlugin {
     fn build(&self, app: &mut App){
         app.add_systems(Startup, spawn_atoms.after(setup_sim));
         app.add_systems(Update, diffuse_atoms);
+        app.add_systems(Update, debug_state_text);
     }
 }
 
@@ -79,3 +80,29 @@ fn diffuse_atoms(
         vel.y = args.temperature * args.diameter * ang.sin() * time.delta_secs();
     }
 }
+
+fn debug_state_text(
+    mut commands: Commands,
+    atom_transforms: Query<(&Transform, &Atom)>,
+    mut all_text: Query<Entity,  With<Text2d>>
+){
+    for (transform, atom) in atom_transforms.iter(){
+        commands.spawn((
+            Text2d::new(format!("{}",atom.1)),
+            TextColor(Color::WHITE),
+            TextFont{
+                font_size: 10.0,
+                ..Default::default()
+            },
+            Transform{
+                translation: Vec3::new(transform.translation.x, transform.translation.y, 0.0),
+                ..Default::default()
+            }
+        ));
+    }
+
+    for text in all_text.iter_mut(){
+        commands.entity(text).despawn();
+    }
+}
+
