@@ -1,0 +1,17 @@
+---
+author: Bhaskar Kumawat
+data: 04/03/2025
+format: 
+    live-html:
+        theme:
+        - simplex
+        - custom-light.scss
+    pdf: default
+---
+
+# Chemistry Generator {.unnumbered}
+
+```{pyodide}
+for x in range(5):
+  print(x ** 2)
+```

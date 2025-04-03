@@ -1,3 +1,10 @@
+---
+author: Bhaskar Kumawat
+format: 
+    html: default
+    pdf: default
+---
+
 # Project Proposal {.unnumbered}
 
 ## Model Proposal for Life from Scratch

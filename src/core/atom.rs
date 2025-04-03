@@ -15,7 +15,7 @@ impl Plugin for AtomsPlugin {
     fn build(&self, app: &mut App){
         app.add_systems(Startup, spawn_atoms.after(setup_sim));
         app.add_systems(Update, diffuse_atoms);
-        app.add_systems(Update, debug_state_text);
+        app.add_systems(Update, debug_state_text); // COMMENT TO DISABLE!
     }
 }
 
