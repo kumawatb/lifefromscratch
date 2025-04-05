@@ -6,12 +6,12 @@ format:
         theme:
         - simplex
         - custom-light.scss
-    pdf: default
 ---
 
-# Chemistry Generator {.unnumbered}
+# Configuration Generator {.unnumbered}
 
-```{pyodide}
-for x in range(5):
-  print(x ** 2)
+The following utility allows a `lifefromscratch` user to generate random/deterministic chemistry configuration files based on patterns.
+
+```{=html}
+<iframe src="scripts/chemgen/app.html" width="100%" height="600"></iframe>
 ```

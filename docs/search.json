@@ -134,12 +134,12 @@
   {
     "objectID": "chemgen.html",
     "href": "chemgen.html",
-    "title": "Chemistry Generator",
+    "title": "Configuration Generator",
     "section": "",
-    "text": "Chemistry Generator",
+    "text": "Configuration Generator\nThe following utility allows a lifefromscratch user to generate random/deterministic chemistry configuration files based on patterns.",
     "crumbs": [
       "Utilities",
-      "Chemistry Generator"
+      "Configuration Generator"
     ]
   },
   {
