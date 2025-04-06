@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{Parser, ValueEnum};
 use bevy::prelude::*;
 
 
@@ -62,6 +62,22 @@ pub struct Args {
     pub seed: u64,
 
     /// Chemistry file
-    #[arg(long, default_value_t=String::from("./chemistry.cfg"))]
-    pub chempath: String
+    #[arg(long, default_value_t = String::from("./chemistry.cfg"))]
+    pub chempath: String,
+
+    /// Program mode
+    #[arg(value_enum, default_value_t = RunMode::Visual)]
+    pub mode: RunMode
+}
+
+#[derive(ValueEnum, Debug, Clone, Copy)]
+pub enum RunMode {
+    /// Start in visual mode without (without debug information like state labels)
+    Visual,
+
+    // Start without any visual output
+    //Headless,
+
+    /// Start in visual mode with debug information
+    Debug
 }

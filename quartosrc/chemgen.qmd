@@ -12,6 +12,5 @@ format:
 
 The following utility allows a `lifefromscratch` user to generate random/deterministic chemistry configuration files based on patterns.
 
-```{=html}
+
 <iframe src="scripts/chemgen/app.html" width="100%" height="600"></iframe>
-```

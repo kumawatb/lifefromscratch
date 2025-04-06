@@ -1,3 +1,4 @@
+use core::args::RunMode;
 use bevy::{prelude::*, window::WindowResolution};
 use avian2d::prelude::*;
 use rand::SeedableRng;
@@ -10,10 +11,11 @@ const WINDOW_SIZE_X: f32 = 800.0 ;
 const WINDOW_SIZE_Y: f32 = 800.0 ;
 
 fn main(){
-    let _ = App::new()
+    
+    let mut app = App::new();
+    app
         .add_plugins(ArgsPlugin)
         .add_plugins(PhysicsPlugins::default())
-        .add_plugins(PhysicsDebugPlugin::default())
         .add_systems(Startup, setup_sim)                        
         .add_plugins(AtomsPlugin)
         .add_plugins(ChemistryPlugin)
@@ -25,9 +27,18 @@ fn main(){
             }),
             ..default()
         }))
-        .insert_resource(ClearColor(Color::srgb(0.0, 0.0, 0.0)))
-        .add_systems(Startup, spawn_camera)
-        .run();
+        .insert_resource(ClearColor(Color::WHITE))
+        .add_systems(Startup, spawn_camera);
+
+    let runmode = app.world().get_resource::<Args>().unwrap().mode;
+    match runmode{
+        RunMode::Debug => {
+            app.add_plugins(PhysicsDebugPlugin::default());
+        },
+        RunMode::Visual => {},
+    }
+    
+    app.run();
 
 }
 

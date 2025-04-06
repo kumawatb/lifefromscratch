@@ -7,6 +7,7 @@ use rand::Rng;
 use crate::core::args::Args;
 use crate::{setup_sim, SimRng};
 
+use super::args::RunMode;
 
 /// Bevy Plugin to initialize and work with atoms
 pub struct AtomsPlugin;
@@ -15,7 +16,16 @@ impl Plugin for AtomsPlugin {
     fn build(&self, app: &mut App){
         app.add_systems(Startup, spawn_atoms.after(setup_sim));
         app.add_systems(Update, diffuse_atoms);
-        app.add_systems(Update, debug_state_text); // COMMENT TO DISABLE!
+
+        let runmode = app.world().get_resource::<Args>().unwrap().mode;
+
+        match runmode{
+            RunMode::Debug => {
+                app.add_systems(Update, debug_state_text);
+            },
+            RunMode::Visual => {},
+        }
+
     }
 }
 

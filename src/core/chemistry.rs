@@ -48,7 +48,9 @@ fn check_collisions_and_react(
             if let Some(rxn) = chem.get_products(Reactant(atom1.0, atom1.1), Reactant(atom2.0, atom2.1)) {
                 match rxn {
                     ReactionResult::Combine(prod1_state, prod2_state) => {
-                        commands.spawn(DistanceJoint::new(contacts.entity1, contacts.entity2).with_rest_length(args.diameter*1.1).with_linear_velocity_damping(20.0));
+                        commands.spawn((
+                            DistanceJoint::new(contacts.entity1, contacts.entity2).with_rest_length(args.diameter*1.1).with_linear_velocity_damping(20.0),
+                        ));
                         atom1.1 = prod1_state;
                         atom2.1 = prod2_state;
                         bmap.bonds.insert((contacts.entity1, contacts.entity2));
