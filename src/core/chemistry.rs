@@ -3,7 +3,7 @@ use std::{fs::File, io::{BufRead, BufReader}};
 use ahash::{AHashMap, AHashSet};
 use bevy::prelude::*;
 use avian2d::{dynamics::solver::xpbd::XpbdConstraint, prelude::*};
-use super::{atom::Atom, args::Args};
+use super::{args::Args, atom::{Atom, BondGraph}};
 
 /// Bevy Plugin to initialize and work with atoms
 pub struct ChemistryPlugin;
@@ -11,7 +11,6 @@ pub struct ChemistryPlugin;
 impl Plugin for ChemistryPlugin {
     fn build(&self, app: &mut App){
         app.add_systems(Startup, load_chemistry);
-        app.insert_resource(BondMap::default());
         app.add_systems(Update,check_collisions_and_react);
         app.add_systems(Update, decompose);
     }
@@ -32,37 +31,43 @@ fn check_collisions_and_react(
     mut collision_events: EventReader<Collision>,
     mut atoms: Query<&mut Atom>,
     chem: Res<Chemistry>,
-    mut bmap: ResMut<BondMap>,
+    mut bgraph: ResMut<BondGraph>,
     args: Res<Args>
 ) {
     for Collision(contacts) in collision_events.read() {
 
-        // Get colliding atoms
-        let [mut atom1, mut atom2] = atoms.get_many_mut([contacts.entity1, contacts.entity2]).unwrap();
+        // Make sure the colliding entities are atoms
+        if atoms.contains(contacts.entity1) && atoms.contains(contacts.entity2) {
+            let [mut atom1, mut atom2] = atoms.get_many_mut([contacts.entity1, contacts.entity2]).unwrap();
 
-        // Check if the atoms are already bonded
-        if ! ( bmap.bonds.contains(&(contacts.entity1, contacts.entity2))
-             || bmap.bonds.contains(&(contacts.entity2, contacts.entity1))) 
-        {
-            // Check if atoms are candidates for a combination or excitation reaction
-            if let Some(rxn) = chem.get_products(Reactant(atom1.0, atom1.1), Reactant(atom2.0, atom2.1)) {
-                match rxn {
-                    ReactionResult::Combine(prod1_state, prod2_state) => {
-                        commands.spawn((
-                            DistanceJoint::new(contacts.entity1, contacts.entity2).with_rest_length(args.diameter*1.1).with_linear_velocity_damping(20.0),
-                        ));
-                        atom1.1 = prod1_state;
-                        atom2.1 = prod2_state;
-                        bmap.bonds.insert((contacts.entity1, contacts.entity2));
-                    },
-                    ReactionResult::Excite(prod1_state, prod2_state) => {
-                        atom1.1 = prod1_state;
-                        atom2.1 = prod2_state;
-                    },
-                    _ => {}
+            // Check if the atoms are already bonded
+            // if ! ( bmap.bonds.contains(&(contacts.entity1, contacts.entity2))
+            //     || bmap.bonds.contains(&(contacts.entity2, contacts.entity1))) 
+            if ! (bgraph.0.contains_edge(contacts.entity1, contacts.entity2))
+            {
+                // Check if atoms are candidates for a combination or excitation reaction
+                if let Some(rxn) = chem.get_products(Reactant(atom1.0, atom1.1), Reactant(atom2.0, atom2.1)) {
+                    match rxn {
+                        ReactionResult::Combine(prod1_state, prod2_state) => {
+                            let bond_id = commands.spawn((
+                                DistanceJoint::new(contacts.entity1, contacts.entity2).with_rest_length(args.diameter*1.1).with_linear_velocity_damping(20.0),
+                            )).id();
+                            atom1.1 = prod1_state;
+                            atom2.1 = prod2_state;
+                            //bmap.bonds.insert((contacts.entity1, contacts.entity2));\
+                            bgraph.0.add_edge(contacts.entity1, contacts.entity2, bond_id);
+                        },
+                        ReactionResult::Excite(prod1_state, prod2_state) => {
+                            atom1.1 = prod1_state;
+                            atom2.1 = prod2_state;
+                        },
+                        _ => {}
+                    }
                 }
             }
         }
+        
+        
     }
 }
 
@@ -71,7 +76,7 @@ fn decompose(
     mut joints: Query<(Entity, &mut DistanceJoint)>,
     mut atoms: Query<&mut Atom>,
     chem: Res<Chemistry>,
-    mut bmap: ResMut<BondMap>,
+    mut bgraph: ResMut<BondGraph>,
 ) {
     // Iterate over all bonds 
     // check if the entities on the bond satisfy a decomposition reaction
@@ -82,8 +87,9 @@ fn decompose(
         if let Some(ReactionResult::Decompose(prod1_state, prod2_state)) = chem.get_products(Reactant(atom1.0, atom1.1), Reactant(atom2.0, atom2.1)) {
             atom1.1 = prod1_state;
             atom2.1 = prod2_state;
-            bmap.bonds.remove(&(atom_entities[0], atom_entities[1]));
-            bmap.bonds.remove(&(atom_entities[1], atom_entities[0]));
+            // bmap.bonds.remove(&(atom_entities[0], atom_entities[1]));
+            // bmap.bonds.remove(&(atom_entities[1], atom_entities[0]));
+            bgraph.0.remove_edge(atom_entities[0], atom_entities[1]);
             commands.entity(joint.0).despawn();
         }
     }
@@ -91,18 +97,18 @@ fn decompose(
 
 
 
-#[derive(Resource)]
-struct BondMap{
-    bonds: AHashSet<(Entity, Entity)>
-}
+// #[derive(Resource)]
+// struct BondMap{
+//     bonds: AHashSet<(Entity, Entity)>
+// }
 
-impl Default for BondMap{
-    fn default() -> Self{
-        Self{
-            bonds: AHashSet::new()
-        }
-    }
-}
+// impl Default for BondMap{
+//     fn default() -> Self{
+//         Self{
+//             bonds: AHashSet::new()
+//         }
+//     }
+// }
 
 #[derive(Hash, Eq, PartialEq, Clone, Copy)]
 pub struct Reactant(u8,u8); // Reactant.0 = species, Reactant.1 = state

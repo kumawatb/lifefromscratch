@@ -44,6 +44,10 @@ pub struct Args {
     /// Initial number of atoms
     #[arg(long, default_value_t = 100)]
     pub init_atoms: u32,
+
+    /// Output molecule data every `output_every` seconds
+    #[arg(long, default_value_t = 10.0)]
+    pub output_every: f32,
     
     /// Number of time steps to run the simulation
     #[arg(long, default_value_t = 1000000)]

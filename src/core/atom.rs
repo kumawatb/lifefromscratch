@@ -1,8 +1,8 @@
 use std::f32::consts::PI;
-
 use bevy::prelude::*;
 use avian2d::prelude::*;
 use colorgrad::Gradient;
+use petgraph::prelude::*;
 use rand::Rng;
 use crate::core::args::Args;
 use crate::{setup_sim, SimRng};
@@ -16,6 +16,7 @@ impl Plugin for AtomsPlugin {
     fn build(&self, app: &mut App){
         app.add_systems(Startup, spawn_atoms.after(setup_sim));
         app.add_systems(Update, diffuse_atoms);
+        app.insert_resource(BondGraph(GraphMap::new()));
 
         let runmode = app.world().get_resource::<Args>().unwrap().mode;
 
@@ -33,6 +34,10 @@ impl Plugin for AtomsPlugin {
 #[derive(Component, Default)]
 pub struct Atom(pub u8, pub u8);
 
+// Graph resource to keep track of connections between atoms
+#[derive(Resource)]
+pub struct BondGraph(pub GraphMap<Entity,Entity,Undirected>);
+
 
 fn spawn_atoms(
     mut commands: Commands,
@@ -40,7 +45,8 @@ fn spawn_atoms(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut rng: ResMut<SimRng>,
     args: Res<Args>,
-    window: Query<&Window>
+    window: Query<&Window>,
+    mut bondgraph: ResMut<BondGraph>
 )
 {
     let shape = Circle::new(args.diameter/2.0);
@@ -71,8 +77,10 @@ fn spawn_atoms(
             RigidBody::Dynamic,
             Collider::circle(args.diameter/2.0),
         );
-        commands.spawn(atombundle);
         
+        let entity_id = commands.spawn(atombundle).id();
+
+        bondgraph.0.add_node(entity_id);
     }
 }
 

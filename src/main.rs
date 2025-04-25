@@ -1,4 +1,4 @@
-use core::args::RunMode;
+use core::{args::RunMode, output::OutputPlugin, walls::WallsPlugin};
 use bevy::{prelude::*, window::WindowResolution};
 use avian2d::prelude::*;
 use rand::SeedableRng;
@@ -19,6 +19,8 @@ fn main(){
         .add_systems(Startup, setup_sim)                        
         .add_plugins(AtomsPlugin)
         .add_plugins(ChemistryPlugin)
+        .add_plugins(WallsPlugin)
+        .add_plugins(OutputPlugin)
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(
                 Window {
@@ -41,7 +43,6 @@ fn main(){
     app.run();
 
 }
-
 
 
 fn spawn_camera(mut commands: Commands) {
