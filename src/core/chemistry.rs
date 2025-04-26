@@ -1,6 +1,6 @@
 use std::{fs::File, io::{BufRead, BufReader}};
 
-use ahash::{AHashMap, AHashSet};
+use ahash::{AHashMap};
 use bevy::prelude::*;
 use avian2d::{dynamics::solver::xpbd::XpbdConstraint, prelude::*};
 use super::{args::Args, atom::{Atom, BondGraph}};

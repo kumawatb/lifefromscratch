@@ -1,6 +1,7 @@
 [package]
 name = "lifefromscratch"
-version = "0.1.0"
+description = "A program to simulate artificial chemistries in a 2D world"
+version = "1.0.0"
 edition = "2021"
 
 [dependencies]
@@ -31,6 +32,17 @@ opt-level = "s"
 # Strip all debugging information from the binary to slightly reduce file size.
 strip = "debuginfo"
 
-
+[package.metadata.packager]
+product-name = "lifefromscratch"
+identifier = "io.github.kumawatb.lifefromscratch"
+version = "1.0.0"
+category = "education"
+long_description = """
+This project is aimed at simulating an artificial 2D chemistry consisting of “atoms” that interact with each other based on arbitrary reaction rules. The goal is to model the emergence of self-replicating entities in a somewhat physics-y world.
+"""
+authors = ["Bhaskar Kumawat <kumawatb@umich.edu>"]
+copyright = "Copyright (c) Bhaskar Kumawat 2025. All rights reserved."
+icons = ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png"]
+resources = ["assets"]
 
 

@@ -10,15 +10,6 @@ use super::{args::Args, atom::{Atom, BondGraph}};
 
 pub struct OutputPlugin;
 
-// Output two things
-// 1. A folder containing all the molecules in a familiar graph format (like graphviz)
-
-// 2. A file that is just the number of different molecule types at every time point that is recorded
-//      Eg.
-//         time,molecule_name,number_of_molecules
-//         0.1,{name1},2
-//         0.4,{name1},3
-
 
 impl Plugin for OutputPlugin {
     fn build(&self, app: &mut App) {
@@ -58,9 +49,10 @@ impl Default for Output{
 fn output_molecules(
     bgraph: ResMut<BondGraph>,
     atoms: Query<&Atom>,
-    mut output: ResMut<Output>
+    mut output: ResMut<Output>,
+    time: Res<Time>
 ){
-    println!("Outputting molecules...");
+    println!("Outputting molecules at time {:?}...", time.elapsed());
     // Dictionary of molecule numbers at this update
     let mut counts: AHashMap<usize, u16> = AHashMap::new();
 
@@ -70,25 +62,48 @@ fn output_molecules(
     for component in components.iter(){ // for each component (vector of entity ids)
         // Create a new graph for the component, using atom species as attributes
         let mut component_species_graph: Graph<u8, u8, Undirected>  = Graph::new_undirected();
-        for entityid_pair in component.into_iter().combinations(2){ // Get all combinations of 2 entity ides for each component
-            // Get the atom species from the entity id
-            if bgraph.0.contains_edge(*entityid_pair[0], *entityid_pair[1]){ // Check if the edge exists in original graph
-                let species1 = atoms.get(*entityid_pair[0]).unwrap().0; // Get species from the atom entity 1
-                let species2 = atoms.get(*entityid_pair[1]).unwrap().0; // Get species from the atom entity 2
+        
+        let mut entityid_to_nodeid_map: AHashMap<Entity, NodeIndex> = AHashMap::new(); // Map of entity id to node id
 
-                let node1 = component_species_graph.add_node(species1); // Add the node to the component graph
-                let node2 = component_species_graph.add_node(species2); // Add the node to the component graph
+        for entityid in component.iter(){
+            // Get the atom species from the entity id
+            let species = atoms.get(*entityid).unwrap().0; // Get species from the atom entity
+            // Add the node to the component graph
+            let nodeid = component_species_graph.add_node(species); // Add the node to the component graph
+            // Add the entity id to the map
+            entityid_to_nodeid_map.insert(*entityid, nodeid); // Add the entity id to the map
+        }
+
+        for nodepair in entityid_to_nodeid_map.iter().combinations(2){
+            // Get the node ids
+            let node1 = nodepair[0].1;
+            let node2 = nodepair[1].1; 
+
+            if bgraph.0.contains_edge(*nodepair[0].0, *nodepair[1].0){ // Check if the edge exists between entities in original graph
                 // Add the edge to this component graph
-                component_species_graph.add_edge(node1,node2, 1); // Add the edge to the component graph
+                component_species_graph.add_edge(*node1,*node2, 1); // Add the edge to the component graph
             }
         }
+
+        // for entityid_pair in component.into_iter().combinations(2){ // Get all combinations of 2 entity ides for each component
+        //     // Get the atom species from the entity id
+        //     if bgraph.0.contains_edge(*entityid_pair[0], *entityid_pair[1]){ // Check if the edge exists in original graph
+        //         let species1 = atoms.get(*entityid_pair[0]).unwrap().0; // Get species from the atom entity 1
+        //         let species2 = atoms.get(*entityid_pair[1]).unwrap().0; // Get species from the atom entity 2
+
+        //         let node1 = component_species_graph.add_node(species1); // Add the node to the component graph
+        //         let node2 = component_species_graph.add_node(species2); // Add the node to the component graph
+        //         // Add the edge to this component graph
+        //         component_species_graph.add_edge(node1,node2, 1); // Add the edge to the component graph
+        //     }
+        // }
 
         let mut component_exists_as_molecule = false;
         // Check if the component is isomorphic to any existing molecule in the dictionary
         for (molid, molecule) in output.moltypes.iter().enumerate(){
             if is_isomorphic_matching(molecule, &component_species_graph, |n1, n2| *n1==*n2, |_, _| true){
                 // If it is, increment the count of this molecule
-                counts.entry(molid).and_modify(|count| *count += 1); 
+                counts.entry(molid).and_modify(|count| *count += 1).or_insert(1); 
                 component_exists_as_molecule = true;
                 break;
             }
@@ -114,7 +129,7 @@ fn output_molecules(
         // Get the name of the molecule
         let molname = format!("molecule_{}", molid);
         // Write to the output file
-        writeln!(output.countsfile, "{},{},{}", 0, molname, count).expect("Failed to write to data file");
+        writeln!(output.countsfile, "{:?},{},{}", time.elapsed(), molname, count).expect("Failed to write to data file");
     }
 }
 
