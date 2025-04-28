@@ -55,10 +55,10 @@ fn spawn_atoms(
 
     // Add atoms to random positions inside the world
     for _ in 0..args.init_atoms{
-        let species = rng.0.random_range(0..args.num_species as u8);
+        let species: u8 = rng.0.random_range(0..args.num_species as u8);
         let state: u8 = rng.0.random_range(0..args.num_states as u8);
 
-        let rgb = colorgrad::preset::rainbow().colors(args.num_species as usize)[species as usize].to_linear_rgba();
+        let rgb = colorgrad::preset::rainbow().colors((args.num_species+1) as usize)[species as usize].to_linear_rgba();
         let color = Color::srgb(rgb[0] as f32, rgb[1] as f32, rgb[2] as f32);
 
         let mesh = meshes.add(shape);
@@ -88,14 +88,13 @@ fn spawn_atoms(
 fn diffuse_atoms(
     mut atoms: Query<&mut LinearVelocity,With<Atom>>,
     args: Res<Args>,
-    mut rng: ResMut<SimRng>,
-    time: Res<Time>
+    mut rng: ResMut<SimRng>
     ){
 
     for mut vel in &mut atoms{
         let ang = rng.0.random::<f32>() * 2.0 * PI;
-        vel.x = args.temperature * args.diameter * ang.cos() * time.delta_secs();
-        vel.y = args.temperature * args.diameter * ang.sin() * time.delta_secs();
+        vel.x = args.temperature * args.diameter * ang.cos(); //* time.delta_secs();
+        vel.y = args.temperature * args.diameter * ang.sin(); //* time.delta_secs();
     }
 }
 

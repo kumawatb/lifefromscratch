@@ -22,7 +22,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -69,6 +89,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -165,7 +214,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./proposal.html">CMPLXSYS 530</a></li><li class="breadcrumb-item"><a href="./finalpaper.html">Final Paper</a></li></ol></nav>
 <div class="quarto-title">
-<p class="subtitle lead">Exploring the origin of evolvable life through generalized chemistries</p>
+<p class="subtitle lead">CMPLXSYS 530 final project</p>
 </div>
 
 
@@ -194,42 +243,168 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="life-from-scratch" class="level1 unnumbered">
-<h1 class="unnumbered">Life from Scratch</h1>
+<section id="exploring-the-origin-of-evolvable-life-through-generalized-chemistries" class="level1">
+<h1>Exploring the origin of evolvable life through generalized chemistries</h1>
+<p><em>Submitted by Bhaskar Kumawat for the CMPLXSYS 530 final project</em></p>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>Provide an overview of the problem and a literature review. You should address: what gap or question are you addressing? What has been done before?</p>
+<p>Various theories based on physical and chemical principles have tried to explain the origin of life from abiotic matter <span class="citation" data-cites="Sutherland2017-ql">(<a href="#ref-Sutherland2017-ql" role="doc-biblioref">Sutherland 2017</a>)</span>. The RNA world hypothesis and Manfred Eigen’s hypercycles are two distinct examples of such an effort <span class="citation" data-cites="Higgs2015-pm Eigen1978-px">(<a href="#ref-Higgs2015-pm" role="doc-biblioref">Higgs and Lehman 2015</a>; <a href="#ref-Eigen1978-px" role="doc-biblioref">Eigen and Schuster 1978</a>)</span>. Artificial chemistry is a related sub-field of complex systems that tries to arrive at a minimal system that can explain the origin of self-replication, regardless of the substrate <span class="citation" data-cites="Banzhaf2015-qk">(<a href="#ref-Banzhaf2015-qk" role="doc-biblioref">Banzhaf and Yamamoto 2015</a>)</span>. Previous work has shown the emergence of autcatalytic networks and replicators in such artificial chemistries <span class="citation" data-cites="Hutton2002-gz">(<a href="#ref-Hutton2002-gz" role="doc-biblioref">Hutton 2002</a>)</span>. However, no artificial chemistry systems as of now have shown a mode of self-replication where “mutations” in chemical structure are faithfully carried forward into future replicators. This phenomena, called <em>Replication involving replicable imperfections</em> or RIRI forms the basic motivation for this project <span class="citation" data-cites="Benner2014-cq">(<a href="#ref-Benner2014-cq" role="doc-biblioref">Benner 2014</a>)</span>. In essence, I wanted to create a software framework where observing such a transition, from non-replication to replication to RIRI would be possible. The core principles that I used to create this framework as follows:</p>
+<ol type="1">
+<li>Performance: The software must be performative enough to be able to simulate a number of particles on the order of <span class="math inline">\(10^5-10^6\)</span> on a powerful computer/cluster. This requirement made me switch from python to the Rust language for the program. As of now, I can simulate around <span class="math inline">\(10^4\)</span> particles without throttling and even <span class="math inline">\(10^5\)</span> particles with some throttling on a desktop computer.</li>
+<li>Customized chemistries: A user must be able to specify arbitrary combination/decomposition rules for “atoms”. This is done using a <code>chemistry.cfg</code> file provided as an input to the program.</li>
+<li>Artificial Physics: The simulation must be stochastic and must follow some thermodynamic criteria making it more akin to real world physics. In this case, I decided to use “temperature-dependent” brownian motion to model the random motion of atoms.</li>
+</ol>
+<p>The first release of the software is now available at the following link: <a href="https://github.com/kumawatb/lifefromscratch/releases/tag/v1.0.0">https://github.com/kumawatb/lifefromscratch/releases/tag/v1.0.0</a> . The source code can be found at the associated github repository: <a href="https://github.com/kumawatb/lifefromscratch">https://github.com/kumawatb/lifefromscratch</a>.</p>
 </section>
 <section id="methods" class="level2">
 <h2 class="anchored" data-anchor-id="methods">Methods</h2>
 <section id="model-description" class="level3">
 <h3 class="anchored" data-anchor-id="model-description">Model Description</h3>
-<p>Describe how your model works in terms of its: agents, interactions, environment, model schedule/timing</p>
+<p>The model consists of a 2D plane with circular rigid-body atoms that move around and collide with each other. Each atom has a “species” and a “state” (both numbers between 0 and 255). while the species remains constant through the simulation, the state can change during reactions. Reactions are essentially interaction rules that are triggered if two atoms in the world are bonded or whenever two unbonded atoms collide. These reactions can be of three types:</p>
+<ol type="1">
+<li>Combination: A reaction where two colliding atoms form a bond and may or may not change the state of both atoms.</li>
+<li>Excitation: A reaction where two colliding atoms change state without bonding together.</li>
+<li>Decomposition: A reaction where two bonded atoms split, destroying the bond and possibly changing state.</li>
+</ol>
+<p>A “chemistry” is a set of such reactions that are followed in a particular simulation. <a href="#fig-schematic" class="quarto-xref">Figure&nbsp;1</a> shows an example chemistry with three reactions and the simulation world that arises as a result.</p>
+<div id="fig-schematic" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-schematic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="./images/examplechem.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-schematic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: An example chemistry and the resulting simulation world. Colors of the atoms denote their species and the integer label denotes their state. States can change during reactions but the species is invariant.
+</figcaption>
+</figure>
+</div>
+<p>Chemistries are specified using a <code>chemistry.cfg</code> file containing a single line for each possible reaction in the world. The contents of an example <code>chemistry.cfg</code> file with one reaction of each type are shown below.</p>
+<pre><code># Number outside the curly braces denote species
+# Number inside curly braces denote states
+# equal symbol (=) denotes a bond
+# plus symbol (+) denotes a reaction on collision (or a split)
+# Ordering is important! Excitations/state changes occur in order
+00{00} + 00{00} -&gt; 00{01} = 00{01} # Combination reaction
+00{01} = 00{01} -&gt; 00{01} + 00{01} # Decomposition reaction
+00{00} + 00{01} -&gt; 00{01} + 00{01} # Excitation reaction</code></pre>
 <ul>
-<li>It’s a good idea to use the PARTE and ODD frameworks as a guide</li>
-<li>Flow charts &amp; visuals are good! Illustrate the sequence of events in your model using a flow chart. Show how the agents operate, how and when interactions happen, the sequence of events in each time step, etc.</li>
-<li>From your model description, someone should be able to implement a version of your model</li>
+<li>Reactions of the type <code>a + b -&gt; a=b</code> indicate bond formation.</li>
+<li>Reactions of type <code>a=b -&gt; a + b</code> indicate bond decomposition, and</li>
+<li><code>a + b -&gt; a' + b'</code> is a simple excitation where the states of the atoms change without any affect on bonds.</li>
 </ul>
+</section>
+<section id="model-schedule" class="level3">
+<h3 class="anchored" data-anchor-id="model-schedule">Model schedule</h3>
+<div id="fig-schedule" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-schedule-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="./images/schedule.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:60.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-schedule-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Schematic of the basic model flow in the program
+</figcaption>
+</figure>
+</div>
+<p>A schematic of the model schedule is shown in <a href="#fig-schedule" class="quarto-xref">Figure&nbsp;2</a>. The entire setup can be essentially divided into four parts.</p>
+<ul>
+<li><strong>Initialization</strong>: Here, the program initializes the parameters and chemistries required for the simulation. It also generates a random initial state for the system based on a random number seed and the initial number of atoms (provided as parameters).</li>
+</ul>
+<p>The following steps are repeated until the user ends the simulation:</p>
+<ul>
+<li><p><strong>Diffusion</strong>: Each atom is assigned a random velocity in any direction (with magnitude proportional the the temperature parameter). In this step, the simulation takes note of all collisions (overlapping atoms) and bond extensions and tries to resolve them by moving the atoms by a computed distance. This step is performed 8x times because sometimes resolving collision between two atoms may create other collisions in the world.</p></li>
+<li><p><strong>Reaction</strong>: Here, all atom pairs that collided with each other are checked for a “reaction” by looking their species/states up in the user specified chemistry. If two colliding atoms can react, they are either bonded and/or their state is changed based on the reaction type. Bonded atoms are also checked for decomposition.</p></li>
+</ul>
+</section>
+<section id="model-output" class="level3">
+<h3 class="anchored" data-anchor-id="model-output">Model output</h3>
+<p>Before creating output files, the program performs the following computations on the world state.</p>
+<ul>
+<li>It creates a “network” of atoms, with edges denoting bonded atoms.</li>
+<li>It splits the network into individual components and classifies the different components into “molecule” groups using a graph-isomorphism algorithm based on the atomic states. Essentially, two molecules are considered the same if they are topologically similar and all the corresponding atoms have the same state.</li>
+</ul>
+<p>Then, it outputs all unique molecular structures that are observed into a <code>./output/structures</code> directory as graphviz network (.dot) files. It also outputs the counts of all molecules that exist in the world every few seconds (given as an input argument to the program using <code>--output-every &lt;t&gt;</code>) into a <code>molecule_counts.csv</code> file in the <code>./output</code> directory.</p>
 </section>
 <section id="model-analyses" class="level3">
 <h3 class="anchored" data-anchor-id="model-analyses">Model Analyses</h3>
-<p>Describe the parameter settings you swept through and the analyses you ran. Someone should be able to recreate your analyses from your description, so be specific and complete!</p>
+<p>As of now, I’ve only tested two different chemistries, one at two different temperature values, and one with two different number of atoms.</p>
 <ul>
-<li>If your model is stochastic, you may need to run multiple trials at the same parameter settings.</li>
+<li><p><strong>Simple</strong>: The first one is a simple chemistry where all atoms are of the same species (species 0) and combine together on collision to form a molecule. The expectation is that after a long time, all the atoms in the world would be part of a single giant molecule. The corresponding <code>chemistry.cfg</code> specification is</p>
+<pre><code>00{00} + 00{00} -&gt; 00{00} = 00{00}</code></pre></li>
 </ul>
+<p>I simulated this chemistry with 1000 atoms for temperature values 200 and 500.</p>
+<ul>
+<li><p><strong>Complex</strong>: The second chemistry has two different species of atoms and includes reactions of all three types. The chemistry specification is</p>
+<pre><code>00{00} + 00{00} -&gt; 00{01} = 00{01} # Species 0 self
+00{00} + 00{01} -&gt; 00{01} = 00{02}
+00{01} + 00{01} -&gt; 00{02} = 00{02}
+
+01{00} + 01{00} -&gt; 01{01} = 01{01} # Species 1 self
+01{00} + 01{01} -&gt; 01{01} = 01{02}
+01{01} + 01{01} -&gt; 01{02} = 01{02}
+
+01{02} + 00{01} -&gt; 01{03} = 00{02}
+01{03} = 01{02} -&gt; 01{02} + 01{01}</code></pre></li>
+</ul>
+<p>I simulated this chemistry at a temperature of 200 with 5000 and 10000 atoms.</p>
 </section>
 </section>
 <section id="results" class="level2">
 <h2 class="anchored" data-anchor-id="results">Results</h2>
-<p>Provide qualitative and quantitative summaries of how your model behaves. Provide graphs and plots of model outcomes at different settings as needed.</p>
+<section id="simple-chemistry" class="level3">
+<h3 class="anchored" data-anchor-id="simple-chemistry">Simple chemistry</h3>
+<p>First, to verify that the simulation works, I used a simple chemistry where I expected a specific outcome. In this case, I decided to model a chemistry where only a single species of atom is present and the atoms are “sticky”, i.e., they freely bond with other atoms in the world. The results of this simulation are shown in <a href="#fig-ressimple" class="quarto-xref">Figure&nbsp;3</a>. As expected, the number of complex molecules, those containing multiple atoms bonded together, increases over time. The overall molecule counts for each type, however, decreases rapidly. This is because each of the structures is created through <em>idiosyncratic</em> collisions and these structures do not self-replicate. As such, the number of types of molecules increases but the population of each molecule goes down.</p>
+<div id="fig-ressimple" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ressimple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="./images/fig_simple.png" class="img-fluid figure-img" style="width:70.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ressimple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Results from simple chemistry. A snapshot of the simulation world after 1000 seconds at temperature 200 (a, c) and 500 (b, d) with N=1000 atoms. The number of different molecules over time and some notable high-frequency molecule structures at these two temperatures are plotted in figure (c) and (d) respectively.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="complex-chemistry" class="level3">
+<h3 class="anchored" data-anchor-id="complex-chemistry">Complex chemistry</h3>
+<p>Next, I modelled a chemistry with two different atomic species that can bond with themselves or with an atom of the opposite type, but in a complex manner. In this case, the state of an atom is essentially a counter for the number of atoms bonded to it, and if the counter reaches 2 the atom stops forming new bonds with other atoms of the same type. I expected that this would give me long “polymer” like molecules that have different number of the different species atoms in their sequence (somewhat like a DNA molecule). This chemistry also includes a “decomposition” reaction ensuring that we don’t get really large molecules. The results for this chemistry are shown in <a href="#fig-rescomplex" class="quarto-xref">Figure&nbsp;4</a>. In this case, I saw the formation of large polymeric molecules (sometimes circular) that included atoms of both species, and in different numbers. This is promising as I can use this chemistry as a starting point for future experiments.</p>
+<div id="fig-rescomplex" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rescomplex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="./images/fig_complex.png" class="img-fluid figure-img" style="width:70.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rescomplex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Results from a complex chemistry. A snapshot of the simulation world after 1000 seconds at temperature 200.0 for N=5000 (a, c) and N=10000 atoms (b, d). The number of different molecules over time and some notable molecule structures at these two atom counts are plotted in figure (c) and (d) respectively. Note that this chemistry shows the formation of large chains of molecules with different numbers of either atomic species and can act as a promising starting point for more complex chemistries.
+</figcaption>
+</figure>
+</div>
+</section>
 </section>
 <section id="discussion" class="level2">
 <h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
-<p>Return to the question or problem in your introduction—what do your results say about this problem? Put your results in a broader context. Describe the strengths, limitations, and potential future directions of your work.</p>
-<ul>
-<li>If you think there are still some bugs driving your model’s behavior, this is the place to discuss this</li>
-<li>Also a good place to talk about how you might verify, validate, or extend the model in the future</li>
-</ul>
+<p>I was able to write an agent-based simulation model where the agents are different atomic species with different states and can bond and split from each other to create large molecules. I also tested this simulation with two different chemistries and saw some interesting molecule structures, especially the formation of long atomic chains. However, the analysis is still lacking when it comes to my origin goal of observing replication involving replicable imperfections (RIRI). Noteably, neither of these chemistries show faithful self-replication—while the number of large molecules grows with time, these molecules are not part of a cycle that produces more copies of the same molecule. The complexity thus increases solely due to a “crystallization-like” reaction rather than direct transfer of information between a parent and a child molecule. To observe self-replication, an autocatalytic reaction set is required which I plan to write next, specifically using Tim Hutton’s squirm3 model <span class="citation" data-cites="Hutton2002-gz">(<a href="#ref-Hutton2002-gz" role="doc-biblioref">Hutton 2002</a>)</span>. This requires a larger number of reactions (around 200) but it has been previously verified to give rise to membrane-bound replicating cell-like molecules.</p>
+<p>The results from this project present a good first test of the framework. They also provide us a null expectation for what to expect from simple non-replicating chemistries. In particular, we see that the number of large complex molecules rarely goes up over time. Instead, small molecules are more likely to be enriched in the system and create an evolutionary dead-end from which it is difficult to recover. If a replicator were to arise in such a chemistry, we would see rapidly growing curves in the graphs in panels (c) and (d) for <a href="#fig-ressimple" class="quarto-xref">Figure&nbsp;3</a>, <a href="#fig-rescomplex" class="quarto-xref">Figure&nbsp;4</a> and not a stable or monotonically decreasing population.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-Banzhaf2015-qk" class="csl-entry" role="listitem">
+Banzhaf, Wolfgang, and Lidia Yamamoto. 2015. <em>Artificial Chemistries</em>. The MIT Press. London, England: MIT Press.
+</div>
+<div id="ref-Benner2014-cq" class="csl-entry" role="listitem">
+Benner, Steven A. 2014. <span>“Paradoxes in the Origin of Life.”</span> <em>Origins of Life and Evolution of the Biosphere: The Journal of the International Society for the Study of the Origin of Life</em> 44 (December): 339–43.
+</div>
+<div id="ref-Eigen1978-px" class="csl-entry" role="listitem">
+Eigen, Manfred, and Peter Schuster. 1978. <span>“The Hypercycle: A Principle of Natural Self-Organization Part <span>B</span>: The Abstract Hypercycle.”</span> <em>The Science of Nature</em> 65 (January): 7–41.
+</div>
+<div id="ref-Higgs2015-pm" class="csl-entry" role="listitem">
+Higgs, Paul G, and Niles Lehman. 2015. <span>“The <span>RNA</span> World: Molecular Cooperation at the Origins of Life.”</span> <em>Nature Reviews. Genetics</em> 16 (January): 7–17.
+</div>
+<div id="ref-Hutton2002-gz" class="csl-entry" role="listitem">
+Hutton, Tim J. 2002. <span>“Evolvable Self-Replicating Molecules in an Artificial Chemistry.”</span> <em>Artificial Life</em> 8: 341–56.
+</div>
+<div id="ref-Sutherland2017-ql" class="csl-entry" role="listitem">
+Sutherland, John D. 2017. <span>“Opinion: Studies on the Origin of Life — the End of the Beginning.”</span> <em>Nature Reviews Chemistry</em> 1 (January): 0012.
+</div>
+</div>
 
 
 </section>

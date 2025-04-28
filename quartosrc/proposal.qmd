@@ -3,6 +3,7 @@ author: Bhaskar Kumawat
 format: 
     html: default
     pdf: default
+bibliography: bibliography/proposal.bib
 ---
 
 # Project Proposal {.unnumbered}

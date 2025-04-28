@@ -30,6 +30,7 @@ fn main(){
             ..default()
         }))
         .insert_resource(ClearColor(Color::WHITE))
+        .insert_resource(Gravity::ZERO)
         .add_systems(Startup, spawn_camera);
 
     let runmode = app.world().get_resource::<Args>().unwrap().mode;
